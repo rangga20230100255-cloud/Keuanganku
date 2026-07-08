@@ -6,7 +6,6 @@
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Keuanganku - Aplikasi Keuangan</title>
-  <!-- Chart.js & SheetJS dari CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
@@ -17,52 +16,54 @@
     }
 
     :root {
-      --bg: #f9f7fc;
+      --bg: #f5f3fa;
       --card: #ffffff;
-      --text: #1e1b2e;
-      --text-secondary: #5a5278;
+      --text: #1a1625;
+      --text-secondary: #6b6380;
       --primary: #7c3aed;
       --primary-light: #a78bfa;
       --accent: #6d28d9;
-      --danger: #b91c1c;
-      --danger-light: #ef4444;
-      --income: #10b981;
-      --expense: #ef4444;
-      --border: #e5e0f0;
-      --shadow: 0 4px 12px rgba(124, 58, 237, 0.08);
-      --nav-bg: #ffffff;
-      --popup-overlay: rgba(30, 27, 46, 0.6);
-      --toast-bg: #1e1b2e;
-      --toast-text: #f9f7fc;
+      --danger: #dc2626;
+      --danger-light: #f87171;
+      --income: #059669;
+      --expense: #dc2626;
+      --border: #e4dff2;
+      --shadow: 0 8px 24px rgba(124, 58, 237, 0.06);
+      --nav-bg: rgba(255, 255, 255, 0.8);
+      --popup-overlay: rgba(18, 15, 30, 0.5);
+      --toast-bg: #1a1625;
+      --toast-text: #f5f3fa;
+      --radius: 20px;
+      --transition: 0.2s ease;
     }
 
     body.dark {
-      --bg: #12101a;
-      --card: #1e1b2e;
-      --text: #ede9f9;
-      --text-secondary: #a094c4;
+      --bg: #0f0b1a;
+      --card: #1c1729;
+      --text: #eee9f9;
+      --text-secondary: #958bb5;
       --primary: #a78bfa;
-      --primary-light: #7c3aed;
-      --accent: #8b5cf6;
+      --primary-light: #8b5cf6;
+      --accent: #7c3aed;
       --danger: #f87171;
-      --danger-light: #dc2626;
-      --border: #352f50;
-      --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      --nav-bg: #1e1b2e;
-      --popup-overlay: rgba(0, 0, 0, 0.7);
-      --toast-bg: #ede9f9;
-      --toast-text: #12101a;
+      --danger-light: #b91c1c;
+      --border: #2e2644;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      --nav-bg: rgba(28, 23, 41, 0.9);
+      --toast-bg: #eee9f9;
+      --toast-text: #0f0b1a;
     }
 
     body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
-      transition: background 0.3s, color 0.3s;
+      transition: background var(--transition), color var(--transition);
       display: flex;
       justify-content: center;
       align-items: flex-start;
       min-height: 100vh;
+      backdrop-filter: blur(4px);
     }
 
     .app-container {
@@ -76,17 +77,19 @@
     }
 
     .app-header {
-      padding: 1rem 1rem 0.5rem;
+      padding: 1.2rem 1.2rem 0.8rem;
       background: var(--card);
       border-bottom: 1px solid var(--border);
       box-shadow: var(--shadow);
+      border-radius: 0 0 28px 28px;
+      margin-bottom: 0.5rem;
     }
 
     .header-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.75rem;
+      margin-bottom: 1rem;
     }
 
     .header-brand {
@@ -101,7 +104,7 @@
 
     .brand-text {
       font-weight: 700;
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       letter-spacing: -0.5px;
     }
 
@@ -109,13 +112,13 @@
       background: none;
       border: none;
       cursor: pointer;
-      padding: 0.4rem;
+      padding: 0.5rem;
       border-radius: 50%;
       color: var(--text);
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.2s;
+      transition: background var(--transition);
     }
 
     .btn-icon:active {
@@ -140,35 +143,37 @@
 
     .summary-row {
       display: flex;
-      gap: 0.5rem;
+      gap: 0.6rem;
     }
 
     .summary-card {
       flex: 1;
       background: var(--card);
-      border-radius: 14px;
-      padding: 0.6rem;
+      border-radius: 18px;
+      padding: 0.8rem 0.5rem;
       border: 1px solid var(--border);
       text-align: center;
+      transition: all var(--transition);
     }
 
     .summary-label {
       font-size: 0.7rem;
       color: var(--text-secondary);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
+      font-weight: 500;
     }
 
     .summary-value {
       font-weight: 700;
-      font-size: 1rem;
+      font-size: 1.1rem;
       display: block;
-      margin-top: 0.15rem;
+      margin-top: 0.2rem;
     }
 
     .total-card {
       border-color: var(--primary);
-      background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(167, 139, 250, 0.05));
+      background: linear-gradient(145deg, rgba(124, 58, 237, 0.04), rgba(167, 139, 250, 0.02));
     }
 
     .income-value {
@@ -182,7 +187,7 @@
     .app-main {
       flex: 1;
       overflow-y: auto;
-      padding: 1rem 1rem 5rem;
+      padding: 0.5rem 1.2rem 5.5rem;
     }
 
     .tab-content {
@@ -191,44 +196,62 @@
 
     .tab-content.active {
       display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .section-title {
       font-weight: 700;
-      font-size: 1rem;
-      margin-bottom: 0.75rem;
+      font-size: 1.05rem;
+      margin-bottom: 0.8rem;
       color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
     }
 
     .section-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.8rem;
     }
 
     .mini-chart-container,
     .chart-container {
       background: var(--card);
-      border-radius: 18px;
+      border-radius: var(--radius);
       padding: 1rem;
-      margin-bottom: 1rem;
+      margin-bottom: 1.2rem;
       border: 1px solid var(--border);
+      box-shadow: var(--shadow);
     }
 
     .donut-container {
       background: var(--card);
-      border-radius: 18px;
+      border-radius: var(--radius);
       padding: 1rem;
-      margin-bottom: 1rem;
+      margin-bottom: 1.2rem;
       border: 1px solid var(--border);
-      max-width: 280px;
+      max-width: 260px;
       margin-left: auto;
       margin-right: auto;
+      box-shadow: var(--shadow);
     }
 
     .donut-container.large {
-      max-width: 320px;
+      max-width: 300px;
     }
 
     .quick-actions {
@@ -242,8 +265,8 @@
     .btn-outline,
     .btn-sm {
       border: none;
-      border-radius: 14px;
-      padding: 0.75rem 1rem;
+      border-radius: 16px;
+      padding: 0.8rem 1rem;
       font-weight: 600;
       font-size: 0.9rem;
       display: flex;
@@ -251,10 +274,11 @@
       justify-content: center;
       gap: 0.4rem;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all var(--transition);
       background: var(--primary);
       color: white;
       flex: 1;
+      letter-spacing: 0.2px;
     }
 
     .btn-danger {
@@ -269,30 +293,33 @@
     }
 
     .btn-sm {
-      padding: 0.4rem 0.8rem;
+      padding: 0.45rem 0.9rem;
       font-size: 0.8rem;
       flex: 0;
+      border-radius: 12px;
     }
 
     .transaction-list {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.6rem;
     }
 
     .transaction-item {
       background: var(--card);
-      border-radius: 14px;
-      padding: 0.75rem 1rem;
+      border-radius: 16px;
+      padding: 0.8rem 1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       border: 1px solid var(--border);
+      transition: box-shadow var(--transition);
     }
 
     .transaction-info {
       display: flex;
       flex-direction: column;
+      gap: 0.1rem;
     }
 
     .transaction-name {
@@ -318,16 +345,18 @@
 
     .transaction-actions {
       display: flex;
-      gap: 0.3rem;
+      gap: 0.2rem;
     }
 
     .icon-btn {
       background: none;
       border: none;
       cursor: pointer;
-      padding: 0.3rem;
-      border-radius: 8px;
+      padding: 0.35rem;
+      border-radius: 10px;
       color: var(--text-secondary);
+      display: flex;
+      align-items: center;
     }
 
     .icon-btn:active {
@@ -336,8 +365,9 @@
 
     .empty-state {
       text-align: center;
-      padding: 2rem;
+      padding: 2.5rem;
       color: var(--text-secondary);
+      font-size: 0.9rem;
     }
 
     .bottom-nav {
@@ -348,12 +378,14 @@
       width: 100%;
       max-width: 480px;
       background: var(--nav-bg);
+      backdrop-filter: blur(10px);
       border-top: 1px solid var(--border);
       display: flex;
       justify-content: space-around;
       padding: 0.5rem 0;
-      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
       z-index: 10;
+      border-radius: 24px 24px 0 0;
     }
 
     .nav-item {
@@ -362,17 +394,18 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.2rem;
+      gap: 0.15rem;
       font-size: 0.65rem;
       color: var(--text-secondary);
-      padding: 0.3rem 0.5rem;
-      border-radius: 12px;
-      transition: 0.2s;
+      padding: 0.4rem 0.6rem;
+      border-radius: 14px;
+      transition: all var(--transition);
     }
 
     .nav-item.active {
       color: var(--primary);
       font-weight: 600;
+      background: rgba(124, 58, 237, 0.08);
     }
 
     .menu-grid {
@@ -384,21 +417,27 @@
     .menu-card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 1.5rem 0.5rem;
+      border-radius: 20px;
+      padding: 1.8rem 0.5rem;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.6rem;
       font-weight: 600;
       cursor: pointer;
       color: var(--text);
+      box-shadow: var(--shadow);
+      transition: transform var(--transition);
+    }
+
+    .menu-card:active {
+      transform: scale(0.97);
     }
 
     .chart-legend {
       display: flex;
       justify-content: center;
-      gap: 1.5rem;
+      gap: 1.8rem;
       margin-top: 0.5rem;
     }
 
@@ -426,6 +465,7 @@
       width: 100%;
       height: 100%;
       background: var(--popup-overlay);
+      backdrop-filter: blur(4px);
       z-index: 20;
     }
 
@@ -436,13 +476,13 @@
       left: 50%;
       transform: translate(-50%, -50%);
       background: var(--card);
-      border-radius: 24px;
+      border-radius: 28px;
       padding: 1.5rem;
       width: 90%;
       max-width: 360px;
       z-index: 21;
       border: 1px solid var(--border);
-      box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 25px 40px rgba(0, 0, 0, 0.25);
     }
 
     .popup-container.active,
@@ -452,12 +492,13 @@
 
     .popup-title {
       font-weight: 700;
-      font-size: 1.1rem;
-      margin-bottom: 1rem;
+      font-size: 1.15rem;
+      margin-bottom: 1.2rem;
+      text-align: center;
     }
 
     .form-group {
-      margin-bottom: 0.8rem;
+      margin-bottom: 0.9rem;
     }
 
     .form-group label {
@@ -465,29 +506,37 @@
       color: var(--text-secondary);
       display: block;
       margin-bottom: 0.2rem;
+      font-weight: 500;
     }
 
     .form-group input,
     .form-group select {
       width: 100%;
-      padding: 0.7rem;
+      padding: 0.7rem 0.8rem;
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 14px;
       background: var(--bg);
       color: var(--text);
       font-size: 0.9rem;
+      outline: none;
+      transition: border var(--transition);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: var(--primary);
     }
 
     .popup-actions {
       display: flex;
       gap: 0.5rem;
-      margin-top: 1rem;
+      margin-top: 1.2rem;
       justify-content: flex-end;
     }
 
     .toast-container {
       position: fixed;
-      bottom: 80px;
+      bottom: 85px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 30;
@@ -501,14 +550,20 @@
     .toast {
       background: var(--toast-bg);
       color: var(--toast-text);
-      padding: 0.8rem 1.2rem;
+      padding: 0.8rem 1.5rem;
       border-radius: 30px;
       font-size: 0.85rem;
       text-align: center;
+      font-weight: 500;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     }
 
     .pocket-summary {
       margin-top: 1rem;
+      background: var(--card);
+      border-radius: 18px;
+      padding: 0.8rem;
+      border: 1px solid var(--border);
     }
 
     .pocket-item {
@@ -516,6 +571,11 @@
       justify-content: space-between;
       padding: 0.5rem 0;
       border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .pocket-item:last-child {
+      border-bottom: none;
     }
   </style>
 </head>
@@ -525,14 +585,14 @@
     <header class="app-header">
       <div class="header-top">
         <div class="header-brand">
-          <svg class="logo-icon" viewBox="0 0 24 24" width="28" height="28">
+          <svg class="logo-icon" viewBox="0 0 24 24" width="30" height="30">
             <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" />
             <path d="M12 6v12M8 10h8M8 14h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
           </svg>
           <span class="brand-text">Keuanganku</span>
         </div>
-        <button class="btn-icon dark-toggle" id="darkToggle"><svg class="sun-icon" viewBox="0 0 24 24" width="22"
-            height="22">
+        <button class="btn-icon dark-toggle" id="darkToggle">
+          <svg class="sun-icon" viewBox="0 0 24 24" width="22" height="22">
             <circle cx="12" cy="12" r="5" fill="currentColor" />
             <g stroke="currentColor" stroke-width="2" stroke-linecap="round">
               <line x1="12" y1="1" x2="12" y2="3" />
@@ -544,9 +604,11 @@
               <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
               <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
             </g>
-          </svg><svg class="moon-icon" viewBox="0 0 24 24" width="22" height="22">
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" width="22" height="22">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="currentColor" />
-          </svg></button>
+          </svg>
+        </button>
       </div>
       <div class="summary-row">
         <div class="summary-card total-card"><span class="summary-label">Total Saldo</span><span class="summary-value"
@@ -559,9 +621,9 @@
     </header>
     <main class="app-main">
       <section class="tab-content active" id="tab-dashboard">
-        <div class="section-title">Ringkasan Keuangan</div>
+        <div class="section-title">📊 Ringkasan Keuangan</div>
         <div class="mini-chart-container"><canvas id="miniCashflowChart"></canvas></div>
-        <div class="section-title">Alokasi Dana per Kantong</div>
+        <div class="section-title">🍩 Alokasi Dana per Kantong</div>
         <div class="donut-container"><canvas id="donutChart"></canvas></div>
         <div class="quick-actions">
           <button class="btn-primary" id="btnQuickAddIncome"><svg viewBox="0 0 24 24" width="20" height="20">
@@ -576,7 +638,7 @@
         </div>
       </section>
       <section class="tab-content" id="tab-transactions">
-        <div class="section-header"><span class="section-title">Riwayat Transaksi</span><button
+        <div class="section-header"><span class="section-title">📋 Riwayat Transaksi</span><button
             class="btn-sm btn-outline" id="btnFilterTransaksi"><svg viewBox="0 0 24 24" width="16" height="16">
               <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46" fill="none" stroke="currentColor"
                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -586,43 +648,43 @@
         </div>
       </section>
       <section class="tab-content" id="tab-cashflow">
-        <div class="section-title">Diagram Cashflow</div>
+        <div class="section-title">📈 Diagram Cashflow</div>
         <div class="chart-container"><canvas id="cashflowChart"></canvas></div>
         <div class="chart-legend"><span class="legend-item"><span class="legend-dot income-dot"></span>
             Pemasukan</span><span class="legend-item"><span class="legend-dot expense-dot"></span> Pengeluaran</span>
         </div>
       </section>
       <section class="tab-content" id="tab-alokasi">
-        <div class="section-title">Alokasi Dana</div>
+        <div class="section-title">🗂 Alokasi Dana</div>
         <div class="donut-container large"><canvas id="alokasiDonutChart"></canvas></div>
         <div class="pocket-summary" id="pocketSummary"></div>
       </section>
       <section class="tab-content" id="tab-lainnya">
         <div class="menu-grid">
-          <button class="menu-card" id="btnKategori"><svg viewBox="0 0 24 24" width="32" height="32">
-              <rect x="3" y="3" width="7" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="2" />
-              <rect x="14" y="3" width="7" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="2" />
-              <rect x="3" y="14" width="7" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="2" />
-              <rect x="14" y="14" width="7" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="2" />
+          <button class="menu-card" id="btnKategori"><svg viewBox="0 0 24 24" width="34" height="34">
+              <rect x="3" y="3" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="2" />
+              <rect x="14" y="3" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="2" />
+              <rect x="3" y="14" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="2" />
+              <rect x="14" y="14" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="2" />
             </svg><span>Kategori</span></button>
-          <button class="menu-card" id="btnKantong"><svg viewBox="0 0 24 24" width="32" height="32">
+          <button class="menu-card" id="btnKantong"><svg viewBox="0 0 24 24" width="34" height="34">
               <path d="M20 6H4a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z" fill="none"
                 stroke="currentColor" stroke-width="2" />
               <path d="M16 16v1a3 3 0 0 1-3 3h-2a3 3 0 0 1-3-3v-1" fill="none" stroke="currentColor" stroke-width="2" />
             </svg><span>Kantong</span></button>
-          <button class="menu-card" id="btnKalkulator"><svg viewBox="0 0 24 24" width="32" height="32">
-              <rect x="2" y="2" width="20" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="2" />
-              <circle cx="7" cy="7" r="1.5" fill="currentColor" />
-              <circle cx="12" cy="7" r="1.5" fill="currentColor" />
-              <circle cx="17" cy="7" r="1.5" fill="currentColor" />
-              <circle cx="7" cy="12" r="1.5" fill="currentColor" />
-              <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-              <circle cx="17" cy="12" r="1.5" fill="currentColor" />
-              <circle cx="7" cy="17" r="1.5" fill="currentColor" />
-              <circle cx="12" cy="17" r="1.5" fill="currentColor" />
-              <circle cx="17" cy="17" r="1.5" fill="currentColor" />
+          <button class="menu-card" id="btnKalkulator"><svg viewBox="0 0 24 24" width="34" height="34">
+              <rect x="2" y="2" width="20" height="20" rx="4" fill="none" stroke="currentColor" stroke-width="2" />
+              <circle cx="7" cy="7" r="1.8" fill="currentColor" />
+              <circle cx="12" cy="7" r="1.8" fill="currentColor" />
+              <circle cx="17" cy="7" r="1.8" fill="currentColor" />
+              <circle cx="7" cy="12" r="1.8" fill="currentColor" />
+              <circle cx="12" cy="12" r="1.8" fill="currentColor" />
+              <circle cx="17" cy="12" r="1.8" fill="currentColor" />
+              <circle cx="7" cy="17" r="1.8" fill="currentColor" />
+              <circle cx="12" cy="17" r="1.8" fill="currentColor" />
+              <circle cx="17" cy="17" r="1.8" fill="currentColor" />
             </svg><span>Kalkulator</span></button>
-          <button class="menu-card" id="btnRekap"><svg viewBox="0 0 24 24" width="32" height="32">
+          <button class="menu-card" id="btnRekap"><svg viewBox="0 0 24 24" width="34" height="34">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="none" stroke="currentColor"
                 stroke-width="2" />
               <polyline points="14,2 14,8 20,8" fill="none" stroke="currentColor" stroke-width="2" />
@@ -634,7 +696,7 @@
     </main>
     <nav class="bottom-nav">
       <button class="nav-item active" data-tab="dashboard"><svg viewBox="0 0 24 24" width="22" height="22">
-          <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2" />
+          <rect x="3" y="3" width="18" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="2" />
           <line x1="3" y1="9" x2="21" y2="9" stroke="currentColor" stroke-width="2" />
           <line x1="9" y1="21" x2="9" y2="9" stroke="currentColor" stroke-width="2" />
         </svg><span>Beranda</span></button>
@@ -642,24 +704,24 @@
           <line x1="8" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
           <line x1="8" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
           <line x1="8" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-          <circle cx="4" cy="6" r="1.5" fill="currentColor" />
-          <circle cx="4" cy="12" r="1.5" fill="currentColor" />
-          <circle cx="4" cy="18" r="1.5" fill="currentColor" />
+          <circle cx="4" cy="6" r="2" fill="currentColor" />
+          <circle cx="4" cy="12" r="2" fill="currentColor" />
+          <circle cx="4" cy="18" r="2" fill="currentColor" />
         </svg><span>Transaksi</span></button>
       <button class="nav-item" data-tab="cashflow"><svg viewBox="0 0 24 24" width="22" height="22">
           <polyline points="3,17 9,10 13,14 21,6" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round" />
-          <circle cx="21" cy="6" r="2" fill="none" stroke="currentColor" stroke-width="2" />
+          <circle cx="21" cy="6" r="2.5" fill="none" stroke="currentColor" stroke-width="2" />
         </svg><span>Cashflow</span></button>
       <button class="nav-item" data-tab="alokasi"><svg viewBox="0 0 24 24" width="22" height="22">
           <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" />
-          <path d="M12 3a9 9 0 0 1 6 15.5" fill="none" stroke="currentColor" stroke-width="2" />
-          <path d="M12 3a9 9 0 0 0-6 15.5" fill="none" stroke="currentColor" stroke-width="2" />
+          <path d="M12 3a9 9 0 0 1 6 15.5" fill="none" stroke="currentColor" stroke-width="2.5" />
+          <path d="M12 3a9 9 0 0 0-6 15.5" fill="none" stroke="currentColor" stroke-width="2.5" />
         </svg><span>Alokasi</span></button>
       <button class="nav-item" data-tab="lainnya"><svg viewBox="0 0 24 24" width="22" height="22">
-          <circle cx="12" cy="5" r="2" fill="currentColor" />
-          <circle cx="12" cy="12" r="2" fill="currentColor" />
-          <circle cx="12" cy="19" r="2" fill="currentColor" />
+          <circle cx="12" cy="5" r="2.2" fill="currentColor" />
+          <circle cx="12" cy="12" r="2.2" fill="currentColor" />
+          <circle cx="12" cy="19" r="2.2" fill="currentColor" />
         </svg><span>Lainnya</span></button>
     </nav>
     <div class="popup-overlay" id="popupOverlay"></div>
@@ -668,31 +730,70 @@
   </div>
   <script>
     // ========== STORAGE ==========
-    const STORAGE_KEYS = { TRANSACTIONS: 'keuanganku_transactions', CATEGORIES: 'keuanganku_categories', POCKETS: 'keuanganku_pockets', DARK: 'keuanganku_dark' };
-    function loadData(key, fallback) { try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : fallback; } catch { return fallback; } }
+    const STORAGE_KEYS = {
+      TRANSACTIONS: 'keuanganku_transactions',
+      CATEGORIES: 'keuanganku_categories',
+      POCKETS: 'keuanganku_pockets',
+      DARK: 'keuanganku_dark'
+    };
+    function loadData(key, fallback) {
+      try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : fallback; } catch { return fallback; }
+    }
     function saveData(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+
     let transactions = loadData(STORAGE_KEYS.TRANSACTIONS, []);
     let categories = loadData(STORAGE_KEYS.CATEGORIES, ['Makanan', 'Transportasi', 'Gaji', 'Belanja', 'Hiburan']);
     let pockets = loadData(STORAGE_KEYS.POCKETS, ['Tunai', 'Bank', 'E-Wallet']);
-    function saveAll() { saveData(STORAGE_KEYS.TRANSACTIONS, transactions); saveData(STORAGE_KEYS.CATEGORIES, categories); saveData(STORAGE_KEYS.POCKETS, pockets); }
+
+    function saveAll() {
+      saveData(STORAGE_KEYS.TRANSACTIONS, transactions);
+      saveData(STORAGE_KEYS.CATEGORIES, categories);
+      saveData(STORAGE_KEYS.POCKETS, pockets);
+    }
 
     // ========== UI HELPERS ==========
     const toastContainer = document.getElementById('toastContainer');
-    function showToast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; toastContainer.appendChild(t); setTimeout(() => t.remove(), 2500); }
+    function showToast(msg) {
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      toastContainer.appendChild(t);
+      setTimeout(() => t.remove(), 2500);
+    }
     function formatRupiah(num) { return 'Rp ' + Number(num).toLocaleString('id-ID'); }
-    function getDateTime() { const now = new Date(); return { date: now.toISOString().split('T')[0], time: now.toTimeString().split(' ')[0].slice(0, 5), full: now.toISOString() }; }
+    function getTodayDate() {
+      const d = new Date();
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+    function getTimeNow() {
+      const d = new Date();
+      return d.toTimeString().split(' ')[0].slice(0, 5);
+    }
 
     // ========== POPUP SYSTEM ==========
     const popupOverlay = document.getElementById('popupOverlay');
     const popupContainer = document.getElementById('popupContainer');
-    function openPopup(html) { popupContainer.innerHTML = html; popupOverlay.classList.add('active'); popupContainer.classList.add('active'); }
-    function closePopup() { popupOverlay.classList.remove('active'); popupContainer.classList.remove('active'); }
+    function openPopup(html) {
+      popupContainer.innerHTML = html;
+      popupOverlay.classList.add('active');
+      popupContainer.classList.add('active');
+    }
+    function closePopup() {
+      popupOverlay.classList.remove('active');
+      popupContainer.classList.remove('active');
+    }
     popupOverlay.addEventListener('click', closePopup);
 
     // ========== SUMMARY UPDATE ==========
     function updateSummary() {
       let totalIn = 0, totalEx = 0;
-      transactions.forEach(t => { if (t.type === 'income') totalIn += t.amount; else totalEx += t.amount; });
+      transactions.forEach(t => {
+        if (t.type === 'income') totalIn += t.amount;
+        else totalEx += t.amount;
+      });
       document.getElementById('totalBalance').textContent = formatRupiah(totalIn - totalEx);
       document.getElementById('totalIncome').textContent = formatRupiah(totalIn);
       document.getElementById('totalExpense').textContent = formatRupiah(totalEx);
@@ -704,7 +805,10 @@
       let filtered = transactions;
       if (filter === 'income') filtered = transactions.filter(t => t.type === 'income');
       else if (filter === 'expense') filtered = transactions.filter(t => t.type === 'expense');
-      if (filtered.length === 0) { list.innerHTML = '<div class="empty-state">Tidak ada transaksi</div>'; return; }
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="empty-state">Tidak ada transaksi</div>';
+        return;
+      }
       list.innerHTML = filtered.map(t => `
       <div class="transaction-item">
         <div class="transaction-info">
@@ -723,11 +827,13 @@
     }
 
     function addTransaction(type) {
-      const dt = getDateTime();
+      const today = getTodayDate();
+      const timeNow = getTimeNow();
       openPopup(`
       <div class="popup-title">${type === 'income' ? 'Tambah Pemasukan' : 'Tambah Pengeluaran'}</div>
-      <div class="form-group"><label>Nama Transaksi</label><input id="popName" placeholder="Nama"></div>
+      <div class="form-group"><label>Nama Transaksi</label><input id="popName" placeholder="contoh: Gaji bulanan"></div>
       <div class="form-group"><label>Jumlah (Rp)</label><input id="popAmount" type="number" placeholder="0"></div>
+      <div class="form-group"><label>Tanggal</label><input id="popDate" type="date" value="${today}"></div>
       <div class="form-group"><label>Kategori</label><select id="popCategory">${categories.map(c => `<option>${c}</option>`).join('')}</select></div>
       <div class="form-group"><label>Kantong</label><select id="popPocket">${pockets.map(p => `<option>${p}</option>`).join('')}</select></div>
       <div class="popup-actions"><button class="btn-outline" onclick="closePopup()">Batal</button><button class="btn-primary" id="saveTrans">Simpan</button></div>
@@ -735,8 +841,19 @@
       document.getElementById('saveTrans').addEventListener('click', () => {
         const name = document.getElementById('popName').value.trim();
         const amount = Number(document.getElementById('popAmount').value);
-        if (!name || amount <= 0) return showToast('Nama dan jumlah harus diisi');
-        transactions.push({ id: Date.now(), type, name, amount, category: document.getElementById('popCategory').value, pocket: document.getElementById('popPocket').value, date: dt.date, time: dt.time, fullDate: dt.full });
+        const date = document.getElementById('popDate').value;
+        if (!name || amount <= 0 || !date) return showToast('Lengkapi data dengan benar');
+        transactions.push({
+          id: Date.now(),
+          type,
+          name,
+          amount,
+          category: document.getElementById('popCategory').value,
+          pocket: document.getElementById('popPocket').value,
+          date: date,
+          time: timeNow,
+          fullDate: new Date(date + 'T' + timeNow).toISOString()
+        });
         saveAll(); updateAll(); closePopup(); showToast('Transaksi ditambahkan');
       });
     }
@@ -748,6 +865,7 @@
       <div class="popup-title">Edit Transaksi</div>
       <div class="form-group"><label>Nama</label><input id="popName" value="${t.name}"></div>
       <div class="form-group"><label>Jumlah</label><input id="popAmount" type="number" value="${t.amount}"></div>
+      <div class="form-group"><label>Tanggal</label><input id="popDate" type="date" value="${t.date}"></div>
       <div class="form-group"><label>Kategori</label><select id="popCategory">${categories.map(c => `<option ${c === t.category ? 'selected' : ''}>${c}</option>`).join('')}</select></div>
       <div class="form-group"><label>Kantong</label><select id="popPocket">${pockets.map(p => `<option ${p === t.pocket ? 'selected' : ''}>${p}</option>`).join('')}</select></div>
       <div class="popup-actions"><button class="btn-outline" onclick="closePopup()">Batal</button><button class="btn-primary" id="updateTrans">Simpan</button></div>
@@ -755,6 +873,7 @@
       document.getElementById('updateTrans').addEventListener('click', () => {
         t.name = document.getElementById('popName').value.trim();
         t.amount = Number(document.getElementById('popAmount').value);
+        t.date = document.getElementById('popDate').value;
         t.category = document.getElementById('popCategory').value;
         t.pocket = document.getElementById('popPocket').value;
         if (!t.name || t.amount <= 0) return showToast('Data tidak valid');
@@ -763,13 +882,17 @@
     }
 
     function deleteTransaction(id) {
-      openPopup(`<div class="popup-title">Hapus Transaksi?</div><p>Data tidak dapat dikembalikan.</p><div class="popup-actions"><button class="btn-outline" onclick="closePopup()">Batal</button><button class="btn-danger" id="confirmDelete">Hapus</button></div>`);
-      document.getElementById('confirmDelete').addEventListener('click', () => { transactions = transactions.filter(t => t.id != id); saveAll(); updateAll(); closePopup(); showToast('Transaksi dihapus'); });
+      openPopup(`<div class="popup-title">Hapus Transaksi?</div><p style="text-align:center;">Data tidak dapat dikembalikan.</p><div class="popup-actions"><button class="btn-outline" onclick="closePopup()">Batal</button><button class="btn-danger" id="confirmDelete">Hapus</button></div>`);
+      document.getElementById('confirmDelete').addEventListener('click', () => {
+        transactions = transactions.filter(t => t.id != id);
+        saveAll(); updateAll(); closePopup(); showToast('Transaksi dihapus');
+      });
     }
 
     // ========== CATEGORIES MANAGEMENT ==========
     function manageCategories() {
-      openPopup(`<div class="popup-title">Kelola Kategori</div><div id="catList" style="max-height:200px;overflow-y:auto;">${categories.map(c => `<div style="display:flex;justify-content:space-between;padding:0.4rem 0;"><span>${c}</span><button class="icon-btn delete-cat" data-cat="${c}"><svg viewBox="0 0 24 24" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/></svg></button></div>`).join('')}</div>
+      openPopup(`<div class="popup-title">Kelola Kategori</div>
+      <div id="catList" style="max-height:200px;overflow-y:auto;">${categories.map(c => `<div style="display:flex;justify-content:space-between;padding:0.5rem 0;"><span>${c}</span><button class="icon-btn delete-cat" data-cat="${c}"><svg viewBox="0 0 24 24" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/></svg></button></div>`).join('')}</div>
       <div class="form-group" style="margin-top:1rem;"><input id="newCat" placeholder="Nama kategori baru"></div>
       <div class="popup-actions"><button class="btn-outline" onclick="closePopup()">Tutup</button><button class="btn-primary" id="addCat">Tambah</button></div>`);
       document.getElementById('addCat').addEventListener('click', () => {
@@ -784,7 +907,8 @@
 
     // ========== POCKETS MANAGEMENT ==========
     function managePockets() {
-      openPopup(`<div class="popup-title">Kelola Kantong</div><div id="pocketList" style="max-height:200px;overflow-y:auto;">${pockets.map(p => `<div style="display:flex;justify-content:space-between;padding:0.4rem 0;"><span>${p}</span><button class="icon-btn delete-pocket" data-pocket="${p}"><svg viewBox="0 0 24 24" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/></svg></button></div>`).join('')}</div>
+      openPopup(`<div class="popup-title">Kelola Kantong</div>
+      <div id="pocketList" style="max-height:200px;overflow-y:auto;">${pockets.map(p => `<div style="display:flex;justify-content:space-between;padding:0.5rem 0;"><span>${p}</span><button class="icon-btn delete-pocket" data-pocket="${p}"><svg viewBox="0 0 24 24" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/></svg></button></div>`).join('')}</div>
       <div class="form-group" style="margin-top:1rem;"><input id="newPocket" placeholder="Nama kantong baru"></div>
       <div class="popup-actions"><button class="btn-outline" onclick="closePopup()">Tutup</button><button class="btn-primary" id="addPocket">Tambah</button></div>`);
       document.getElementById('addPocket').addEventListener('click', () => {
@@ -803,62 +927,122 @@
       const dates = [...new Set(transactions.map(t => t.date))].sort();
       const incomeByDate = {}, expenseByDate = {};
       dates.forEach(d => { incomeByDate[d] = 0; expenseByDate[d] = 0; });
-      transactions.forEach(t => { if (t.type === 'income') incomeByDate[t.date] += t.amount; else expenseByDate[t.date] += t.amount; });
-      const incomeData = dates.map(d => incomeByDate[d]), expenseData = dates.map(d => expenseByDate[d]);
-      if (miniChart) miniChart.destroy(); if (cashflowChart) cashflowChart.destroy();
+      transactions.forEach(t => {
+        if (t.type === 'income') incomeByDate[t.date] += t.amount;
+        else expenseByDate[t.date] += t.amount;
+      });
+      const incomeData = dates.map(d => incomeByDate[d]);
+      const expenseData = dates.map(d => expenseByDate[d]);
+
+      if (miniChart) miniChart.destroy();
+      if (cashflowChart) cashflowChart.destroy();
       const ctxMini = document.getElementById('miniCashflowChart')?.getContext('2d');
       if (ctxMini) miniChart = new Chart(ctxMini, {
-        type: 'line', data: {
-          labels: dates.slice(-7), datasets: [
-            { label: 'Pemasukan', data: incomeData.slice(-7), borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', tension: 0.3 },
-            { label: 'Pengeluaran', data: expenseData.slice(-7), borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', tension: 0.3 }
+        type: 'line',
+        data: {
+          labels: dates.slice(-7),
+          datasets: [
+            { label: 'Pemasukan', data: incomeData.slice(-7), borderColor: '#059669', backgroundColor: 'rgba(5,150,105,0.08)', tension: 0.4, borderWidth: 2, pointRadius: 3 },
+            { label: 'Pengeluaran', data: expenseData.slice(-7), borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.08)', tension: 0.4, borderWidth: 2, pointRadius: 3 }
           ]
-        }, options: { responsive: true, maintainAspectRatio: true }
+        },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } }
       });
       const ctxCash = document.getElementById('cashflowChart')?.getContext('2d');
       if (ctxCash) cashflowChart = new Chart(ctxCash, {
-        type: 'line', data: {
-          labels: dates, datasets: [
-            { label: 'Pemasukan', data: incomeData, borderColor: '#10b981', tension: 0.3 },
-            { label: 'Pengeluaran', data: expenseData, borderColor: '#ef4444', tension: 0.3 }
+        type: 'line',
+        data: {
+          labels: dates,
+          datasets: [
+            { label: 'Pemasukan', data: incomeData, borderColor: '#059669', backgroundColor: 'rgba(5,150,105,0.1)', tension: 0.4, borderWidth: 2, pointRadius: 2 },
+            { label: 'Pengeluaran', data: expenseData, borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.1)', tension: 0.4, borderWidth: 2, pointRadius: 2 }
           ]
-        }, options: { responsive: true }
+        },
+        options: { responsive: true }
       });
+
       const pocketTotals = {};
       pockets.forEach(p => pocketTotals[p] = 0);
-      transactions.forEach(t => { if (pocketTotals[t.pocket] !== undefined) pocketTotals[t.pocket] += (t.type === 'income' ? t.amount : -t.amount); });
-      const pLabels = Object.keys(pocketTotals), pData = Object.values(pocketTotals);
-      if (donutChart) donutChart.destroy(); if (alokasiChart) alokasiChart.destroy();
+      transactions.forEach(t => {
+        if (pocketTotals[t.pocket] !== undefined) pocketTotals[t.pocket] += (t.type === 'income' ? t.amount : -t.amount);
+      });
+      const pLabels = Object.keys(pocketTotals);
+      const pData = Object.values(pocketTotals);
+      if (donutChart) donutChart.destroy();
+      if (alokasiChart) alokasiChart.destroy();
       const ctxDonut = document.getElementById('donutChart')?.getContext('2d');
-      if (ctxDonut) donutChart = new Chart(ctxDonut, { type: 'doughnut', data: { labels: pLabels, datasets: [{ data: pData, backgroundColor: ['#7c3aed', '#a78bfa', '#c4b5fd', '#6d28d9', '#8b5cf6'] }] }, options: { responsive: true } });
+      if (ctxDonut) donutChart = new Chart(ctxDonut, {
+        type: 'doughnut',
+        data: {
+          labels: pLabels,
+          datasets: [{ data: pData, backgroundColor: ['#7c3aed', '#a78bfa', '#c4b5fd', '#6d28d9', '#8b5cf6'], borderWidth: 0 }]
+        },
+        options: { responsive: true, cutout: '70%' }
+      });
       const ctxAlokasi = document.getElementById('alokasiDonutChart')?.getContext('2d');
-      if (ctxAlokasi) alokasiChart = new Chart(ctxAlokasi, { type: 'doughnut', data: { labels: pLabels, datasets: [{ data: pData }] }, options: { responsive: true } });
-      const summaryDiv = document.getElementById('pocketSummary');
-      if (summaryDiv) summaryDiv.innerHTML = pLabels.map((l, i) => `<div class="pocket-item"><span>${l}</span><span>${formatRupiah(pData[i])}</span></div>`).join('');
+      if (ctxAlokasi) alokasiChart = new Chart(ctxAlokasi, {
+        type: 'doughnut',
+        data: {
+          labels: pLabels,
+          datasets: [{ data: pData, backgroundColor: ['#7c3aed', '#a78bfa', '#c4b5fd', '#6d28d9', '#8b5cf6'] }]
+        },
+        options: { responsive: true }
+      });
+      document.getElementById('pocketSummary').innerHTML = pLabels.map((l, i) => `<div class="pocket-item"><span>${l}</span><span>${formatRupiah(pData[i])}</span></div>`).join('');
     }
 
-    // ========== EXPORT & RESET ==========
-    function exportRekap(period) {
-      let filtered = transactions;
-      const now = new Date();
-      if (period === 'weekly') { const start = new Date(now); start.setDate(now.getDate() - 7); filtered = transactions.filter(t => new Date(t.date) >= start); }
-      else if (period === 'monthly') { const start = new Date(now.getFullYear(), now.getMonth(), 1); filtered = transactions.filter(t => new Date(t.date) >= start); }
+    // ========== EXPORT WITH DATE RANGE ==========
+    function exportRekap() {
+      openPopup(`
+      <div class="popup-title">Rekap Rentang Tanggal</div>
+      <div class="form-group"><label>Tanggal Mulai</label><input id="startDate" type="date" value="${getTodayDate()}"></div>
+      <div class="form-group"><label>Tanggal Akhir</label><input id="endDate" type="date" value="${getTodayDate()}"></div>
+      <div class="popup-actions"><button class="btn-outline" onclick="closePopup()">Batal</button><button class="btn-primary" id="exportOnly">Ekspor Saja</button><button class="btn-danger" id="exportReset">Download & Reset</button></div>
+    `);
+      document.getElementById('exportOnly').addEventListener('click', () => {
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+        if (!start || !end) return showToast('Pilih tanggal mulai dan akhir');
+        const filtered = transactions.filter(t => t.date >= start && t.date <= end);
+        if (filtered.length === 0) return showToast('Tidak ada transaksi dalam rentang ini');
+        generateExcel(filtered, `rekap_${start}_${end}`);
+        closePopup();
+      });
+      document.getElementById('exportReset').addEventListener('click', () => {
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+        if (!start || !end) return showToast('Pilih tanggal mulai dan akhir');
+        const filtered = transactions.filter(t => t.date >= start && t.date <= end);
+        if (filtered.length === 0) return showToast('Tidak ada transaksi dalam rentang ini');
+        generateExcel(filtered, `rekap_reset_${start}_${end}`);
+        transactions = transactions.filter(t => !(t.date >= start && t.date <= end));
+        saveAll(); updateAll(); closePopup(); showToast('Data dalam rentang dihapus & file diunduh');
+      });
+    }
+
+    function generateExcel(dataArray, filename) {
       const wsData = [['Nama', 'Jumlah', 'Tipe', 'Kategori', 'Kantong', 'Tanggal', 'Jam']];
-      filtered.forEach(t => wsData.push([t.name, t.amount, t.type === 'income' ? 'Pemasukan' : 'Pengeluaran', t.category, t.pocket, t.date, t.time]));
-      const wb = XLSX.utils.book_new(), ws = XLSX.utils.aoa_to_sheet(wsData);
+      dataArray.forEach(t => wsData.push([t.name, t.amount, t.type === 'income' ? 'Pemasukan' : 'Pengeluaran', t.category, t.pocket, t.date, t.time]));
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
       XLSX.utils.book_append_sheet(wb, ws, 'Rekap');
-      openPopup(`<div class="popup-title">Ekspor ${period === 'weekly' ? 'Mingguan' : 'Bulanan'}</div><p>Pilih aksi:</p>
-      <div class="popup-actions"><button class="btn-outline" id="exportOnly">Ekspor Saja</button><button class="btn-danger" id="exportReset">Download & Reset</button></div>`);
-      document.getElementById('exportOnly').addEventListener('click', () => { XLSX.writeFile(wb, `rekap_${period}_${new Date().toISOString().slice(0, 10)}.xlsx`); closePopup(); showToast('File diekspor'); });
-      document.getElementById('exportReset').addEventListener('click', () => { XLSX.writeFile(wb, `rekap_${period}_reset.xlsx`); transactions = []; saveAll(); updateAll(); closePopup(); showToast('Data direset & file diunduh'); });
+      XLSX.writeFile(wb, `${filename}.xlsx`);
+      showToast('File berhasil diunduh');
     }
 
-    function updateAll() { updateSummary(); renderTransactions(); renderCharts(); }
+    function updateAll() {
+      updateSummary();
+      renderTransactions();
+      renderCharts();
+    }
 
     // ========== CALCULATOR ==========
     function openCalculator() {
-      openPopup(`<div class="popup-title">Kalkulator</div><input id="calcDisplay" style="width:100%;padding:0.7rem;text-align:right;font-size:1.2rem;border-radius:12px;border:1px solid var(--border);background:var(--bg);color:var(--text);" value="0" readonly>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;margin-top:1rem;">${['7', '8', '9', '/', '4', '5', '6', '*', '1', '2', '3', '-', '0', '.', '=', '+', 'C'].map(v => `<button class="btn-sm calc-btn" data-val="${v}">${v}</button>`).join('')}</div>`);
+      openPopup(`<div class="popup-title">Kalkulator</div>
+      <input id="calcDisplay" style="width:100%;padding:0.8rem;text-align:right;font-size:1.3rem;border-radius:14px;border:1px solid var(--border);background:var(--bg);color:var(--text);" value="0" readonly>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.6rem;margin-top:1rem;">
+        ${['7', '8', '9', '/', '4', '5', '6', '*', '1', '2', '3', '-', '0', '.', '=', '+', 'C'].map(v => `<button class="btn-sm calc-btn" data-val="${v}" style="padding:0.8rem;font-size:1rem;">${v}</button>`).join('')}
+      </div>`);
       let display = document.getElementById('calcDisplay');
       document.querySelectorAll('.calc-btn').forEach(b => b.addEventListener('click', (e) => {
         const val = e.currentTarget.dataset.val;
@@ -869,33 +1053,36 @@
     }
 
     // ========== EVENT LISTENERS ==========
-    document.getElementById('darkToggle').addEventListener('click', () => { document.body.classList.toggle('dark'); saveData(STORAGE_KEYS.DARK, document.body.classList.contains('dark')); });
+    document.getElementById('darkToggle').addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      saveData(STORAGE_KEYS.DARK, document.body.classList.contains('dark'));
+    });
     if (loadData(STORAGE_KEYS.DARK, false)) document.body.classList.add('dark');
 
     document.querySelectorAll('.nav-item').forEach(item => {
       item.addEventListener('click', () => {
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); item.classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        item.classList.add('active');
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.getElementById(`tab-${item.dataset.tab}`).classList.add('active');
         if (item.dataset.tab === 'transactions') renderTransactions();
-        if (item.dataset.tab === 'cashflow' || item.dataset.tab === 'dashboard' || item.dataset.tab === 'alokasi') renderCharts();
-      })
+        if (['cashflow', 'dashboard', 'alokasi'].includes(item.dataset.tab)) renderCharts();
+      });
     });
 
     document.getElementById('btnQuickAddIncome').addEventListener('click', () => addTransaction('income'));
     document.getElementById('btnQuickAddExpense').addEventListener('click', () => addTransaction('expense'));
     document.getElementById('btnFilterTransaksi').addEventListener('click', () => {
       openPopup(`<div class="popup-title">Filter Transaksi</div><select id="filterSelect"><option value="all">Semua</option><option value="income">Pemasukan</option><option value="expense">Pengeluaran</option></select><div class="popup-actions"><button class="btn-primary" id="applyFilter">Terapkan</button></div>`);
-      document.getElementById('applyFilter').addEventListener('click', () => { renderTransactions(document.getElementById('filterSelect').value); closePopup(); });
+      document.getElementById('applyFilter').addEventListener('click', () => {
+        renderTransactions(document.getElementById('filterSelect').value);
+        closePopup();
+      });
     });
     document.getElementById('btnKategori').addEventListener('click', manageCategories);
     document.getElementById('btnKantong').addEventListener('click', managePockets);
     document.getElementById('btnKalkulator').addEventListener('click', openCalculator);
-    document.getElementById('btnRekap').addEventListener('click', () => {
-      openPopup(`<div class="popup-title">Rekap & Ekspor</div><p>Pilih periode:</p><div class="popup-actions"><button class="btn-primary" id="rekapMingguan">Mingguan</button><button class="btn-primary" id="rekapBulanan">Bulanan</button></div>`);
-      document.getElementById('rekapMingguan').addEventListener('click', () => { closePopup(); exportRekap('weekly'); });
-      document.getElementById('rekapBulanan').addEventListener('click', () => { closePopup(); exportRekap('monthly'); });
-    });
+    document.getElementById('btnRekap').addEventListener('click', exportRekap);
 
     updateAll();
   </script>
