@@ -1,0 +1,422 @@
+:root {
+  /* Skema Warna Paten */
+  --primary: #4a148c;
+  /* Ungu Tua untuk UI Utama */
+  --accent: #111111;
+  /* Hitam untuk UI Sekunder */
+
+  /* Warna Cashflow Konsisten */
+  --income: #2b9348;
+  /* Hijau Pemasukan */
+  --expense: #d90429;
+  /* Merah Pengeluaran */
+
+  /* Neumorphism Light Mode */
+  --bg-color: #f0f3f8;
+  --shadow-light: #ffffff;
+  --shadow-dark: #d1d9e6;
+  --text-main: #111111;
+  --text-muted: #666666;
+
+  /* Gradien Kartu Solid */
+  --card-grad-1: #4a148c;
+  --card-grad-2: #210049;
+  --card-text: #ffffff;
+}
+
+[data-theme="dark"] {
+  --primary: #ce93d8;
+  /* Ungu Terang agar kontras di latar hitam */
+  --accent: #ffffff;
+  /* Putih */
+
+  /* Neumorphism Dark Mode */
+  --bg-color: #181818;
+  --shadow-light: #242424;
+  --shadow-dark: #0c0c0c;
+  --text-main: #ffffff;
+  --text-muted: #aaaaaa;
+
+  /* Gradien Kartu Tetap Ungu Tua (Tidak Pudar) */
+  --card-grad-1: #6a1b9a;
+  --card-grad-2: #38006b;
+  --card-text: #ffffff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Rajdhani', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  transition: background 0.3s;
+}
+
+.app-container {
+  width: 100%;
+  max-width: 480px;
+  height: 100%;
+  background-color: var(--bg-color);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: background 0.3s;
+}
+
+/* Tipografi Warna Spesifik */
+.text-primary {
+  color: var(--primary);
+  font-weight: 700;
+  transition: color 0.3s;
+}
+
+.text-accent {
+  color: var(--accent);
+  font-weight: 700;
+  transition: color 0.3s;
+}
+
+.text-income {
+  color: var(--income);
+  font-weight: 700;
+}
+
+.text-expense {
+  color: var(--expense);
+  font-weight: 700;
+}
+
+.border-accent {
+  border: 1px solid var(--accent);
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 15px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.mt-10 {
+  margin-top: 10px;
+}
+
+.mt-20 {
+  margin-top: 20px;
+}
+
+.mt-30 {
+  margin-top: 30px;
+}
+
+.mb-20 {
+  margin-bottom: 20px;
+}
+
+.p-10 {
+  padding: 10px;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.grid-span-2 {
+  grid-column: span 2;
+}
+
+/* Komponen Neumorphism */
+.neu-card {
+  background: var(--bg-color);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
+  margin-bottom: 20px;
+  transition: background 0.3s;
+}
+
+.gradient-card {
+  background: linear-gradient(135deg, var(--card-grad-1), var(--card-grad-2));
+  box-shadow: 6px 6px 15px var(--shadow-dark);
+  color: var(--card-text);
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.gradient-card .card-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--card-text);
+}
+
+.gradient-card .card-balance {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-top: 5px;
+  color: var(--card-text);
+}
+
+.neu-btn {
+  background: var(--bg-color);
+  color: var(--text-main);
+  border: none;
+  padding: 16px;
+  border-radius: 15px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+  transition: all 0.2s ease-in-out;
+  letter-spacing: 1px;
+}
+
+.neu-btn:active {
+  box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+}
+
+.neu-input,
+.neu-inset {
+  width: 100%;
+  padding: 16px;
+  border-radius: 15px;
+  border: none;
+  outline: none;
+  background: var(--bg-color);
+  color: var(--text-main);
+  font-size: 1rem;
+  font-weight: 600;
+  box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+  transition: background 0.3s;
+}
+
+/* Layout & Konten */
+.neu-header {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.app-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: 1px;
+}
+
+.clock-text {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.icon-btn {
+  padding: 10px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px 100px 20px;
+}
+
+.view-section {
+  display: none;
+  animation: fadeIn 0.3s;
+}
+
+.view-section.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.neu-list-item {
+  background: var(--bg-color);
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 4px 4px 10px var(--shadow-dark), -4px -4px 10px var(--shadow-light);
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.3s;
+}
+
+.list-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.list-sub {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.list-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.neu-mini-btn {
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  border-radius: 10px;
+  margin-left: 5px;
+}
+
+/* Kalkulator & Chart */
+.calc-screen {
+  text-align: right;
+  font-size: 2.2rem;
+  overflow-x: auto;
+  padding: 20px;
+}
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.calc-equals {
+  background: var(--primary);
+  color: white;
+  box-shadow: 4px 4px 10px var(--shadow-dark);
+  grid-row: span 2;
+}
+
+.chart-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-radius: 10px;
+  padding-bottom: 10px;
+}
+
+.chart-wrapper {
+  height: 250px;
+  position: relative;
+}
+
+/* Navigasi Bawah & Modal */
+.neu-bottom-nav {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 15px 20px;
+  background: var(--bg-color);
+  display: flex;
+  justify-content: space-between;
+  box-shadow: 0 -5px 20px var(--shadow-dark);
+  border-radius: 30px 30px 0 0;
+  transition: background 0.3s;
+}
+
+.nav-btn {
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 10px;
+  border-radius: 15px;
+  transition: 0.3s;
+}
+
+.nav-btn svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.5;
+}
+
+.nav-btn.active {
+  color: var(--primary);
+  background: var(--bg-color);
+  box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+}
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.neu-modal {
+  background: var(--bg-color);
+  padding: 25px;
+  border-radius: 25px;
+  width: 85%;
+  max-width: 380px;
+  box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.3);
+  animation: popUp 0.3s ease;
+}
+
+@keyframes popUp {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
