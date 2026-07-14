@@ -1,14 +1,20 @@
-// Database Inti - Bersih tanpa sisa-sisa fitur kustom warna
 let db = JSON.parse(localStorage.getItem('proFinanceDB')) || {
   theme: 'light',
   pockets: [{ id: 'p_1', name: 'DOMPET UTAMA', balance: 0 }],
-  transactions: [], accounts: []
+  transactions: [], accounts: [], debts: []
 };
 
 let currentView = 'view-home';
 const formatRp = (num) => 'RP ' + num.toLocaleString('id-ID');
 
+function getLocalDatetimeString(dateObj = new Date()) {
+  const d = new Date(dateObj);
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 16);
+}
+
 window.onload = () => {
+  if (!db.debts) db.debts = [];
   applyTheme();
   updateClock();
   setInterval(updateClock, 1000);
@@ -60,10 +66,10 @@ function switchTab(tabId, btn) {
   document.getElementById(tabId).classList.add('active');
   btn.classList.add('active');
   currentView = tabId;
+  btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
   if (tabId === 'view-charts') renderCharts();
 }
 
-// ================= FITUR SALIN REKENING =================
 function copyAccount(num) {
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard.writeText(num).then(() => { customAlert('NOMOR REKENING BERHASIL DISALIN'); })
@@ -78,12 +84,14 @@ function copyAccount(num) {
   }
 }
 
-// ================= MODAL & TRANSAKSI =================
+// ================= MODAL HANDLER =================
 function openModal(id, mode = 'add', dataId = null) {
   document.getElementById(id).classList.add('active');
   populateSelects();
 
-  document.querySelectorAll(`#${id} input`).forEach(i => i.value = '');
+  document.querySelectorAll(`#${id} input`).forEach(i => {
+    if (i.type !== 'datetime-local') i.value = '';
+  });
 
   if (id === 'modal-income' || id === 'modal-expense') {
     const title = id === 'modal-income' ? 'inc' : 'exp';
@@ -94,8 +102,13 @@ function openModal(id, mode = 'add', dataId = null) {
       document.getElementById(`${title}-amount`).value = trx.amount;
       document.getElementById(`${title}-pocket`).value = trx.pocketId;
       document.getElementById(`${title}-desc`).value = trx.desc;
+      document.getElementById(`${title}-date`).value = getLocalDatetimeString(trx.date);
+    } else {
+      document.getElementById(`${title}-date`).value = getLocalDatetimeString();
     }
   }
+
+  if (id === 'modal-transfer') document.getElementById('tf-date').value = getLocalDatetimeString();
 
   if (id === 'modal-pocket') {
     document.getElementById('pkt-title').innerText = mode === 'add' ? 'KANTONG BARU' : 'EDIT KANTONG';
@@ -104,6 +117,26 @@ function openModal(id, mode = 'add', dataId = null) {
       document.getElementById('pkt-id').value = pkt.id;
       document.getElementById('pkt-name').value = pkt.name;
     }
+  }
+
+  if (id === 'modal-debt-main') {
+    document.getElementById('debt-title').innerText = mode === 'add' ? 'CATAT HUTANG BARU' : 'EDIT NAMA HUTANG';
+    if (mode === 'edit') {
+      const debt = db.debts.find(d => d.id === dataId);
+      document.getElementById('debt-id').value = debt.id;
+      document.getElementById('debt-name').value = debt.name;
+      document.getElementById('debt-amount').value = debt.amount;
+      document.getElementById('debt-date').value = getLocalDatetimeString(debt.date);
+    } else {
+      document.getElementById('debt-date').value = getLocalDatetimeString();
+    }
+  }
+
+  if (id === 'modal-debt-update') {
+    document.getElementById('debt-up-title').innerText = mode === 'add' ? 'TAMBAH HUTANG SAYA (+)' : 'SAYA BAYAR HUTANG (-)';
+    document.getElementById('debt-up-id').value = dataId;
+    document.getElementById('debt-up-type').value = mode;
+    document.getElementById('debt-up-date').value = getLocalDatetimeString();
   }
 }
 
@@ -117,12 +150,16 @@ function populateSelects() {
   });
 }
 
+// ================= TRANSAKSI & KANTONG =================
 function processTrx(type) {
   const prefix = type === 'masuk' ? 'inc' : 'exp';
   const id = document.getElementById(`${prefix}-id`).value;
   const amount = parseFloat(document.getElementById(`${prefix}-amount`).value);
   const pocketId = document.getElementById(`${prefix}-pocket`).value;
   const desc = document.getElementById(`${prefix}-desc`).value.toUpperCase() || (type === 'masuk' ? 'MASUK' : 'KELUAR');
+
+  const inputDate = document.getElementById(`${prefix}-date`).value;
+  const finalDate = inputDate ? new Date(inputDate).toISOString() : new Date().toISOString();
 
   if (!amount || amount <= 0) return customAlert('JUMLAH TIDAK VALID');
   const pocket = db.pockets.find(p => p.id === pocketId);
@@ -136,12 +173,12 @@ function processTrx(type) {
       oldPocket.balance += oldTrx.type === 'masuk' ? oldTrx.amount : -oldTrx.amount;
       return customAlert('SALDO TIDAK CUKUP');
     }
-    oldTrx.amount = amount; oldTrx.pocketId = pocketId; oldTrx.desc = desc;
+    oldTrx.amount = amount; oldTrx.pocketId = pocketId; oldTrx.desc = desc; oldTrx.date = finalDate;
     pocket.balance += type === 'masuk' ? amount : -amount;
   } else {
     if (type === 'keluar' && pocket.balance < amount) return customAlert('SALDO TIDAK CUKUP');
     pocket.balance += type === 'masuk' ? amount : -amount;
-    db.transactions.push({ id: 't_' + Date.now(), date: new Date().toISOString(), type, amount, pocketId, desc });
+    db.transactions.push({ id: 't_' + Date.now(), date: finalDate, type, amount, pocketId, desc });
   }
   closeModal(`modal-${type === 'masuk' ? 'income' : 'expense'}`); saveData();
 }
@@ -151,16 +188,18 @@ function processTransfer() {
   const fromId = document.getElementById('tf-from').value;
   const toId = document.getElementById('tf-to').value;
 
+  const inputDate = document.getElementById('tf-date').value;
+  const finalDate = inputDate ? new Date(inputDate).toISOString() : new Date().toISOString();
+
   if (!amount || fromId === toId) return customAlert('DATA TRANSFER TIDAK VALID');
   const pFrom = db.pockets.find(p => p.id === fromId);
   const pTo = db.pockets.find(p => p.id === toId);
 
   if (pFrom.balance < amount) return customAlert('SALDO KANTONG ASAL KURANG');
-
   pFrom.balance -= amount; pTo.balance += amount;
-  const date = new Date().toISOString();
-  db.transactions.push({ id: 't_out_' + Date.now(), date, type: 'keluar', amount, pocketId: fromId, desc: 'TF KE ' + pTo.name });
-  db.transactions.push({ id: 't_in_' + Date.now(), date, type: 'masuk', amount, pocketId: toId, desc: 'TF DARI ' + pFrom.name });
+
+  db.transactions.push({ id: 't_out_' + Date.now(), date: finalDate, type: 'keluar', amount, pocketId: fromId, desc: 'TF KE ' + pTo.name });
+  db.transactions.push({ id: 't_in_' + (Date.now() + 1), date: finalDate, type: 'masuk', amount, pocketId: toId, desc: 'TF DARI ' + pFrom.name });
   closeModal('modal-transfer'); saveData();
 }
 
@@ -189,6 +228,63 @@ function processAccount() {
 
 function delAcc(id) {
   customConfirm('HAPUS REKENING INI?', () => { db.accounts = db.accounts.filter(a => a.id !== id); saveData(); });
+}
+
+// ================= HUTANG SAYA =================
+function processDebtMain() {
+  const id = document.getElementById('debt-id').value;
+  const name = document.getElementById('debt-name').value.toUpperCase();
+  const amount = parseFloat(document.getElementById('debt-amount').value);
+
+  const inputDate = document.getElementById('debt-date').value;
+  const finalDate = inputDate ? new Date(inputDate).toISOString() : new Date().toISOString();
+
+  if (!name || !amount || amount <= 0) return customAlert('DATA HUTANG TIDAK VALID');
+
+  if (id) {
+    const debt = db.debts.find(d => d.id === id);
+    debt.name = name;
+    if (debt.amount !== amount) {
+      debt.amount = amount;
+      debt.history.push({ id: 'dh_' + Date.now(), type: 'edit', amount, date: finalDate });
+    }
+  } else {
+    db.debts.push({
+      id: 'd_' + Date.now(),
+      name,
+      amount,
+      date: finalDate,
+      history: [{ id: 'dh_' + Date.now(), type: 'add', amount, date: finalDate }]
+    });
+  }
+  closeModal('modal-debt-main'); saveData();
+}
+
+function processDebtUpdate() {
+  const id = document.getElementById('debt-up-id').value;
+  const type = document.getElementById('debt-up-type').value;
+  const amount = parseFloat(document.getElementById('debt-up-amount').value);
+
+  const inputDate = document.getElementById('debt-up-date').value;
+  const finalDate = inputDate ? new Date(inputDate).toISOString() : new Date().toISOString();
+
+  if (!amount || amount <= 0) return customAlert('NOMINAL TIDAK VALID');
+
+  const debt = db.debts.find(d => d.id === id);
+  if (type === 'sub' && amount > debt.amount) return customAlert('NOMINAL PEMBAYARAN MELEBIHI SISA HUTANG');
+
+  if (type === 'add') debt.amount += amount;
+  else debt.amount -= amount;
+
+  debt.history.push({ id: 'dh_' + Date.now(), type, amount, date: finalDate });
+
+  closeModal('modal-debt-update'); saveData();
+}
+
+function deleteDebt(id) {
+  customConfirm('HAPUS CATATAN HUTANG INI?', () => {
+    db.debts = db.debts.filter(d => d.id !== id); saveData();
+  });
 }
 
 function deleteTrx(id) {
@@ -225,7 +321,7 @@ function magicDelete() {
 }
 
 function deleteAllHistory() {
-  customConfirm('HAPUS SEMUA DATA? SALDO AKAN JADI 0', () => {
+  customConfirm('HAPUS SEMUA DATA TRANSAKSI? SALDO KANTONG AKAN JADI 0', () => {
     db.transactions = []; db.pockets.forEach(p => p.balance = 0); saveData();
     customAlert('SEMUA DATA BERHASIL DIHAPUS');
   });
@@ -236,24 +332,28 @@ function renderAll() {
   const total = db.pockets.reduce((sum, p) => sum + p.balance, 0);
   document.getElementById('total-balance').innerText = formatRp(total);
 
+  // Render Kantong (Tampilan tombol Edit & Hapus menyamping)
   document.getElementById('pocket-list').innerHTML = db.pockets.map(p => `
         <div class="neu-list-item">
             <div><div class="list-title">${p.name}</div><div class="list-sub">SALDO</div></div>
-            <div style="text-align:right">
+            <div class="list-right-actions">
                 <div class="list-value text-primary">${formatRp(p.balance)}</div>
-                <button class="neu-btn neu-mini-btn mt-10" onclick="openModal('modal-pocket', 'edit', '${p.id}')">EDIT</button>
-                ${p.balance === 0 ? `<button class="neu-btn neu-mini-btn mt-10 text-accent border-accent" onclick="deletePocket('${p.id}')">HAPUS</button>` : ''}
+                <div class="action-btn-group">
+                    <button class="neu-btn neu-mini-btn" onclick="openModal('modal-pocket', 'edit', '${p.id}')">EDIT</button>
+                    ${p.balance === 0 ? `<button class="neu-btn neu-mini-btn text-accent border-accent" onclick="deletePocket('${p.id}')">HAPUS</button>` : ''}
+                </div>
             </div>
         </div>
     `).join('');
 
+  // Render Rekening
   document.getElementById('account-list').innerHTML = db.accounts.map(a => `
         <div class="neu-list-item" style="flex-direction: column; gap: 12px; align-items: flex-start;">
             <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
                 <div class="list-title text-primary">${a.bank}</div>
                 <div class="list-sub" style="margin:0; font-weight:700;">A/N: ${a.owner}</div>
             </div>
-            <div class="neu-inset" style="padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="neu-inset" style="padding: 12px; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <div class="list-value" style="font-size: 1.2rem; letter-spacing: 1px;">${a.num}</div>
                 <button class="neu-btn neu-mini-btn text-primary" style="margin-left:10px; padding: 10px 15px;" onclick="copyAccount('${a.num}')">SALIN</button>
             </div>
@@ -261,6 +361,54 @@ function renderAll() {
         </div>
     `).join('');
 
+  // Render Hutang
+  const debtHTML = db.debts.length === 0 ? '<p style="text-align:center; color:var(--text-muted); font-size:0.9rem;">BELUM ADA CATATAN HUTANG</p>' : db.debts.map(d => {
+    const dDate = new Date(d.date).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase();
+
+    const sortedHistory = (d.history || []).sort((a, b) => new Date(b.date) - new Date(a.date));
+    const historyHTML = sortedHistory.map(h => {
+      const hDate = new Date(h.date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }) + ' | ' + new Date(h.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace(/:/g, '.');
+      let sign = '', colorClass = '', label = '';
+      if (h.type === 'add') { sign = '+'; colorClass = 'text-expense'; label = 'Hutang'; }
+      else if (h.type === 'sub') { sign = '-'; colorClass = 'text-income'; label = 'Bayar'; }
+      else { sign = ''; colorClass = 'text-primary'; label = 'Edit'; }
+
+      return `
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px; padding-bottom:8px; border-bottom:1px solid rgba(128,128,128,0.1);">
+                <div style="font-size:0.8rem; color:var(--text-main);">${hDate} <span style="color:var(--text-muted)">(${label})</span></div>
+                <div class="${colorClass}" style="font-size:0.9rem; font-weight:700;">${sign} ${formatRp(h.amount)}</div>
+            </div>`;
+    }).join('');
+
+    return `
+        <div class="neu-list-item" style="flex-direction: column; gap: 12px; align-items: flex-start;">
+            <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+                <div class="list-title text-primary">${d.name}</div>
+                <div class="list-sub" style="margin:0; font-weight:700;">TGL: ${dDate}</div>
+            </div>
+            <div class="neu-inset" style="padding: 12px; width: 100%; text-align: center;">
+                <div class="list-sub" style="margin-bottom: 5px;">SISA HUTANG SAYA:</div>
+                <div class="list-value text-expense" style="font-size: 1.5rem;">${formatRp(d.amount)}</div>
+            </div>
+            <div style="width: 100%; margin-top: 10px;">
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; font-weight:700;">RIWAYAT HUTANG INI:</div>
+                <div class="neu-inset" style="max-height: 120px; overflow-y: auto; padding: 10px; border-radius: 10px; background: transparent; box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);">
+                    ${historyHTML}
+                </div>
+            </div>
+            <div class="grid-2 w-100 mt-10">
+                <button class="neu-btn neu-mini-btn text-expense" style="padding: 12px;" onclick="openModal('modal-debt-update', 'add', '${d.id}')">+ HUTANG</button>
+                <button class="neu-btn neu-mini-btn text-income" style="padding: 12px;" onclick="openModal('modal-debt-update', 'sub', '${d.id}')">- BAYAR</button>
+            </div>
+            <div class="grid-2 w-100 mt-10">
+                <button class="neu-btn neu-mini-btn text-primary" onclick="openModal('modal-debt-main', 'edit', '${d.id}')">EDIT</button>
+                <button class="neu-btn neu-mini-btn text-accent border-accent" onclick="deleteDebt('${d.id}')">HAPUS</button>
+            </div>
+        </div>`;
+  }).join('');
+  document.getElementById('debt-list').innerHTML = debtHTML;
+
+  // Render Riwayat
   const hist = document.getElementById('history-list'); hist.innerHTML = '';
   const sorted = [...db.transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
   let lastDate = '';
@@ -277,10 +425,12 @@ function renderAll() {
     hist.innerHTML += `
         <div class="neu-list-item">
             <div><div class="list-title">${t.desc}</div><div class="list-sub">${d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace(/:/g, '.')} | ${pktName}</div></div>
-            <div style="text-align:right">
+            <div class="list-right-actions">
                 <div class="list-value ${isMasuk ? 'text-income' : 'text-expense'}">${isMasuk ? '+' : '-'}${formatRp(t.amount)}</div>
-                <button class="neu-btn neu-mini-btn mt-10" onclick="openModal('modal-${isMasuk ? 'income' : 'expense'}', 'edit', '${t.id}')">EDIT</button>
-                <button class="neu-btn neu-mini-btn mt-10 text-accent border-accent" onclick="deleteTrx('${t.id}')">HAPUS</button>
+                <div class="action-btn-group">
+                    <button class="neu-btn neu-mini-btn" onclick="openModal('modal-${isMasuk ? 'income' : 'expense'}', 'edit', '${t.id}')">EDIT</button>
+                    <button class="neu-btn neu-mini-btn text-accent border-accent" onclick="deleteTrx('${t.id}')">HAPUS</button>
+                </div>
             </div>
         </div>`;
   });
@@ -295,7 +445,7 @@ function calc(v) {
   document.getElementById('calc-display').innerText = cVal;
 }
 
-// ================= GRAFIK MIXED (BAR + LINE) =================
+// ================= GRAFIK (BAR + LINE TREN KAS) =================
 let barChart, pieChart;
 
 function renderCharts() {
@@ -308,10 +458,8 @@ function renderCharts() {
     const pColor = compStyle.getPropertyValue('--primary').trim();
     const textCol = db.theme === 'dark' ? '#ffffff' : '#111111';
 
-    // Warna Hijau & Merah Permanen untuk Cashflow
     const incomeColor = '#2b9348';
     const expenseColor = '#d90429';
-
     const todayStrRaw = new Date().toISOString().split('T')[0];
 
     let map = {};
@@ -327,10 +475,14 @@ function renderCharts() {
       return new Date(d).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
     });
 
+    const chartWrapper = document.getElementById('chart-wrapper-div');
+    const chartScrollBox = document.getElementById('chart-scroll-box');
+    const minWidthCalculated = rawLabels.length * 120;
+    const containerWidth = chartScrollBox.clientWidth;
+    chartWrapper.style.width = Math.max(containerWidth, minWidthCalculated) + 'px';
+
     const dataIn = rawLabels.map(l => map[l].in);
     const dataOut = rawLabels.map(l => map[l].out);
-
-    // Data untuk Garis (Net Cashflow / Naik Turun)
     const dataNet = rawLabels.map(l => map[l].in - map[l].out);
 
     if (barChart) barChart.destroy();
@@ -343,10 +495,10 @@ function renderCharts() {
             type: 'line',
             label: 'NET CASHFLOW',
             data: dataNet,
-            borderColor: pColor, // Garis melintang berwarna ungu tema
+            borderColor: pColor,
             backgroundColor: pColor,
             borderWidth: 3,
-            tension: 0.3, // Efek melengkung
+            tension: 0.3,
             pointBackgroundColor: textCol,
             pointRadius: 4,
             fill: false,
@@ -356,8 +508,9 @@ function renderCharts() {
             type: 'bar',
             label: 'MASUK',
             data: dataIn,
-            backgroundColor: incomeColor, // Hijau Masuk
-            maxBarThickness: 15,
+            backgroundColor: incomeColor,
+            barPercentage: 0.6,
+            categoryPercentage: 0.7,
             borderRadius: 4,
             yAxisID: 'y'
           },
@@ -365,8 +518,9 @@ function renderCharts() {
             type: 'bar',
             label: 'KELUAR',
             data: dataOut,
-            backgroundColor: expenseColor, // Merah Keluar
-            maxBarThickness: 15,
+            backgroundColor: expenseColor,
+            barPercentage: 0.6,
+            categoryPercentage: 0.7,
             borderRadius: 4,
             yAxisID: 'y'
           }

@@ -1,24 +1,16 @@
 :root {
-  /* Skema Warna Paten */
   --primary: #4a148c;
-  /* Ungu Tua untuk UI Utama */
   --accent: #111111;
-  /* Hitam untuk UI Sekunder */
 
-  /* Warna Cashflow Konsisten */
   --income: #2b9348;
-  /* Hijau Pemasukan */
   --expense: #d90429;
-  /* Merah Pengeluaran */
 
-  /* Neumorphism Light Mode */
   --bg-color: #f0f3f8;
   --shadow-light: #ffffff;
   --shadow-dark: #d1d9e6;
   --text-main: #111111;
   --text-muted: #666666;
 
-  /* Gradien Kartu Solid */
   --card-grad-1: #4a148c;
   --card-grad-2: #210049;
   --card-text: #ffffff;
@@ -26,18 +18,14 @@
 
 [data-theme="dark"] {
   --primary: #ce93d8;
-  /* Ungu Terang agar kontras di latar hitam */
   --accent: #ffffff;
-  /* Putih */
 
-  /* Neumorphism Dark Mode */
   --bg-color: #181818;
   --shadow-light: #242424;
   --shadow-dark: #0c0c0c;
   --text-main: #ffffff;
   --text-muted: #aaaaaa;
 
-  /* Gradien Kartu Tetap Ungu Tua (Tidak Pudar) */
   --card-grad-1: #6a1b9a;
   --card-grad-2: #38006b;
   --card-text: #ffffff;
@@ -71,7 +59,27 @@ body {
   transition: background 0.3s;
 }
 
-/* Tipografi Warna Spesifik */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+  border-radius: 10px;
+  box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 10px;
+  border: 1px solid var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
 .text-primary {
   color: var(--primary);
   font-weight: 700;
@@ -105,6 +113,16 @@ body {
   margin-bottom: 15px;
   letter-spacing: 1px;
   text-transform: uppercase;
+}
+
+.input-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: block;
+  text-align: left;
+  margin-bottom: 8px;
+  color: var(--text-muted);
+  margin-left: 5px;
 }
 
 .mt-10 {
@@ -212,7 +230,11 @@ body {
   transition: background 0.3s;
 }
 
-/* Layout & Konten */
+[data-theme="dark"] ::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+/* Layout App */
 .neu-header {
   padding: 20px;
   display: flex;
@@ -274,10 +296,11 @@ body {
   }
 }
 
+/* PERBAIKAN: Item List Menjadi Rapi dan Simetris */
 .neu-list-item {
   background: var(--bg-color);
   border-radius: 15px;
-  padding: 15px;
+  padding: 20px 15px;
   box-shadow: 4px 4px 10px var(--shadow-dark), -4px -4px 10px var(--shadow-light);
   margin-bottom: 15px;
   display: flex;
@@ -304,11 +327,25 @@ body {
   font-weight: 700;
 }
 
+.list-right-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.action-btn-group {
+  display: flex;
+  gap: 8px;
+}
+
 .neu-mini-btn {
-  padding: 8px 12px;
+  padding: 10px 15px;
   font-size: 0.8rem;
   border-radius: 10px;
-  margin-left: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Kalkulator & Chart */
@@ -336,7 +373,8 @@ body {
   overflow-x: auto;
   overflow-y: hidden;
   border-radius: 10px;
-  padding-bottom: 10px;
+  padding-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 .chart-wrapper {
@@ -344,18 +382,25 @@ body {
   position: relative;
 }
 
-/* Navigasi Bawah & Modal */
+/* Navigasi Bawah Bisa Digeser */
 .neu-bottom-nav {
   position: absolute;
   bottom: 0;
   width: 100%;
-  padding: 15px 20px;
+  padding: 15px 10px;
   background: var(--bg-color);
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
   box-shadow: 0 -5px 20px var(--shadow-dark);
   border-radius: 30px 30px 0 0;
   transition: background 0.3s;
+}
+
+.neu-bottom-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .nav-btn {
@@ -367,6 +412,10 @@ body {
   padding: 10px;
   border-radius: 15px;
   transition: 0.3s;
+  flex: 0 0 auto;
+  min-width: 60px;
+  display: flex;
+  justify-content: center;
 }
 
 .nav-btn svg {
@@ -381,6 +430,7 @@ body {
   box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
 }
 
+/* PERBAIKAN: Modal (Pop up) Simetris Konsisten */
 .modal-overlay {
   position: absolute;
   top: 0;
@@ -393,6 +443,7 @@ body {
   align-items: center;
   z-index: 9999;
   backdrop-filter: blur(4px);
+  padding: 20px;
 }
 
 .modal-overlay.active {
@@ -403,12 +454,20 @@ body {
   background: var(--bg-color);
   padding: 25px;
   border-radius: 25px;
-  width: 85%;
+  width: 100%;
   max-width: 380px;
   box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.3);
   animation: popUp 0.3s ease;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
+.modal-form-group {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+/* Jarak antar input selalu presisi */
 @keyframes popUp {
   from {
     transform: scale(0.8);

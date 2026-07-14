@@ -15,7 +15,7 @@
   <div class="app-container">
     <header class="neu-header">
       <div class="header-info">
-        <div class="app-title">MY KEUANGAN</div>
+        <div class="app-title">PRO FINANCE</div>
         <div id="realtime-clock" class="clock-text">00:00:00</div>
       </div>
       <div class="header-actions">
@@ -39,13 +39,12 @@
     <main class="main-content">
       <!-- BERANDA -->
       <section id="view-home" class="view-section active">
-        <!-- Kartu Saldo dengan Gradien Ungu Konsisten -->
         <div class="neu-card gradient-card">
           <div class="card-label">TOTAL SALDO AKTIF</div>
           <div class="card-balance" id="total-balance">RP 0</div>
         </div>
 
-        <div class="grid-2">
+        <div class="grid-2 mb-20">
           <button class="neu-btn" onclick="openModal('modal-income', 'add')">
             <span class="text-income">UANG MASUK</span>
           </button>
@@ -53,7 +52,7 @@
             <span class="text-expense">UANG KELUAR</span>
           </button>
         </div>
-        <button class="neu-btn w-100 mt-20" onclick="openModal('modal-transfer')">
+        <button class="neu-btn w-100" onclick="openModal('modal-transfer')">
           <span class="text-primary">TRANSFER ANTAR KANTONG</span>
         </button>
       </section>
@@ -64,19 +63,30 @@
         <button class="neu-btn w-100 mb-20 text-primary" onclick="openModal('modal-pocket', 'add')">TAMBAH KANTONG
           BARU</button>
         <div id="pocket-list" class="list-container"></div>
+      </section>
 
-        <div class="section-title mt-30">BUKU REKENING</div>
+      <!-- REKENING -->
+      <section id="view-account" class="view-section">
+        <div class="section-title">BUKU REKENING</div>
         <button class="neu-btn w-100 mb-20 text-accent" onclick="openModal('modal-account')">SIMPAN REKENING
           BARU</button>
         <div id="account-list" class="list-container"></div>
+      </section>
+
+      <!-- HUTANG -->
+      <section id="view-debt" class="view-section">
+        <div class="section-title">CATATAN HUTANG SAYA</div>
+        <button class="neu-btn w-100 mb-20 text-expense" onclick="openModal('modal-debt-main', 'add')">TAMBAH HUTANG
+          BARU</button>
+        <div id="debt-list" class="list-container"></div>
       </section>
 
       <!-- GRAFIK -->
       <section id="view-charts" class="view-section">
         <div class="section-title">ARUS KAS & TREN (GESER KIRI-KANAN)</div>
         <div class="neu-card p-10">
-          <div class="chart-scroll">
-            <div class="chart-wrapper" style="width: 800px;">
+          <div class="chart-scroll" id="chart-scroll-box">
+            <div class="chart-wrapper" id="chart-wrapper-div">
               <canvas id="cashflowChart"></canvas>
             </div>
           </div>
@@ -136,24 +146,49 @@
     </main>
 
     <!-- NAVIGASI BAWAH -->
-    <nav class="neu-bottom-nav">
+    <nav class="neu-bottom-nav" id="bottom-nav">
+      <!-- 1. Beranda (Home) -->
       <button class="nav-btn active" onclick="switchTab('view-home', this)">
         <svg viewBox="0 0 24 24" stroke="currentColor" fill="none">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
         </svg>
       </button>
+      <!-- 2. Kantong (Dompet/Wallet) - DIGANTI -->
       <button class="nav-btn" onclick="switchTab('view-pockets', this)">
-        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none">
-          <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-          <line x1="2" y1="10" x2="22" y2="10"></line>
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path>
+          <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path>
+          <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path>
         </svg>
       </button>
+      <!-- 3. Rekening (Gedung Bank) - DIGANTI -->
+      <button class="nav-btn" onclick="switchTab('view-account', this)">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <polygon points="12 2 2 7 22 7"></polygon>
+          <polyline points="2 17 2 22 22 22 22 17"></polyline>
+          <line x1="6" y1="12" x2="6" y2="17"></line>
+          <line x1="10" y1="12" x2="10" y2="17"></line>
+          <line x1="14" y1="12" x2="14" y2="17"></line>
+          <line x1="18" y1="12" x2="18" y2="17"></line>
+        </svg>
+      </button>
+      <!-- 4. Hutang (Dokumen) -->
+      <button class="nav-btn" onclick="switchTab('view-debt', this)">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+      </button>
+      <!-- 5. Chart (Grafik) -->
       <button class="nav-btn" onclick="switchTab('view-charts', this)">
         <svg viewBox="0 0 24 24" stroke="currentColor" fill="none">
           <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
           <polyline points="17 6 23 6 23 12"></polyline>
         </svg>
       </button>
+      <!-- 6. Calc (Kalkulator) -->
       <button class="nav-btn" onclick="switchTab('view-calc', this)">
         <svg viewBox="0 0 24 24" stroke="currentColor" fill="none">
           <rect x="4" y="2" width="16" height="20" rx="2"></rect>
@@ -161,6 +196,7 @@
           <line x1="16" y1="14" x2="16" y2="18"></line>
         </svg>
       </button>
+      <!-- 7. History (Riwayat) -->
       <button class="nav-btn" onclick="switchTab('view-history', this)">
         <svg viewBox="0 0 24 24" stroke="currentColor" fill="none">
           <circle cx="12" cy="12" r="10"></circle>
@@ -170,32 +206,52 @@
     </nav>
   </div>
 
-  <!-- ================= MODALS ================= -->
+  <!-- ================= MODALS (SANGAT SIMETRIS) ================= -->
 
   <div class="modal-overlay" id="modal-income">
     <div class="neu-modal">
-      <div class="section-title text-center text-income" id="inc-title">UANG MASUK</div>
+      <div class="section-title text-center text-primary" id="inc-title">CATAT PEMASUKAN</div>
       <input type="hidden" id="inc-id">
-      <input type="number" id="inc-amount" class="neu-input mb-20" placeholder="JUMLAH (RP)">
-      <select id="inc-pocket" class="neu-input mb-20"></select>
-      <input type="text" id="inc-desc" class="neu-input mb-20" placeholder="KETERANGAN">
+      <div class="modal-form-group">
+        <label class="input-label">PILIH TANGGAL & WAKTU</label>
+        <input type="datetime-local" id="inc-date" class="neu-input">
+      </div>
+      <div class="modal-form-group">
+        <input type="number" id="inc-amount" class="neu-input" placeholder="JUMLAH (RP)">
+      </div>
+      <div class="modal-form-group">
+        <select id="inc-pocket" class="neu-input"></select>
+      </div>
+      <div class="modal-form-group">
+        <input type="text" id="inc-desc" class="neu-input" placeholder="KETERANGAN">
+      </div>
       <div class="grid-2">
         <button class="neu-btn" onclick="closeModal('modal-income')">BATAL</button>
-        <button class="neu-btn text-income" onclick="processTrx('masuk')">SIMPAN</button>
+        <button class="neu-btn text-primary" onclick="processTrx('masuk')">SIMPAN</button>
       </div>
     </div>
   </div>
 
   <div class="modal-overlay" id="modal-expense">
     <div class="neu-modal">
-      <div class="section-title text-center text-expense" id="exp-title">UANG KELUAR</div>
+      <div class="section-title text-center text-accent" id="exp-title">CATAT PENGELUARAN</div>
       <input type="hidden" id="exp-id">
-      <input type="number" id="exp-amount" class="neu-input mb-20" placeholder="JUMLAH (RP)">
-      <select id="exp-pocket" class="neu-input mb-20"></select>
-      <input type="text" id="exp-desc" class="neu-input mb-20" placeholder="KETERANGAN">
+      <div class="modal-form-group">
+        <label class="input-label">PILIH TANGGAL & WAKTU</label>
+        <input type="datetime-local" id="exp-date" class="neu-input">
+      </div>
+      <div class="modal-form-group">
+        <input type="number" id="exp-amount" class="neu-input" placeholder="JUMLAH (RP)">
+      </div>
+      <div class="modal-form-group">
+        <select id="exp-pocket" class="neu-input"></select>
+      </div>
+      <div class="modal-form-group">
+        <input type="text" id="exp-desc" class="neu-input" placeholder="KETERANGAN">
+      </div>
       <div class="grid-2">
         <button class="neu-btn" onclick="closeModal('modal-expense')">BATAL</button>
-        <button class="neu-btn text-expense" onclick="processTrx('keluar')">SIMPAN</button>
+        <button class="neu-btn text-accent" onclick="processTrx('keluar')">SIMPAN</button>
       </div>
     </div>
   </div>
@@ -203,11 +259,21 @@
   <div class="modal-overlay" id="modal-transfer">
     <div class="neu-modal">
       <div class="section-title text-center text-primary">TRANSFER DANA</div>
-      <input type="number" id="tf-amount" class="neu-input mb-20" placeholder="JUMLAH (RP)">
-      <label style="font-size:0.8rem; margin-bottom:5px; display:block; font-weight:700">DARI KANTONG:</label>
-      <select id="tf-from" class="neu-input mb-20"></select>
-      <label style="font-size:0.8rem; margin-bottom:5px; display:block; font-weight:700">KE KANTONG:</label>
-      <select id="tf-to" class="neu-input mb-20"></select>
+      <div class="modal-form-group">
+        <label class="input-label">PILIH TANGGAL & WAKTU</label>
+        <input type="datetime-local" id="tf-date" class="neu-input">
+      </div>
+      <div class="modal-form-group">
+        <input type="number" id="tf-amount" class="neu-input" placeholder="JUMLAH (RP)">
+      </div>
+      <div class="modal-form-group">
+        <label class="input-label">DARI KANTONG:</label>
+        <select id="tf-from" class="neu-input"></select>
+      </div>
+      <div class="modal-form-group">
+        <label class="input-label">KE KANTONG:</label>
+        <select id="tf-to" class="neu-input"></select>
+      </div>
       <div class="grid-2">
         <button class="neu-btn" onclick="closeModal('modal-transfer')">BATAL</button>
         <button class="neu-btn text-primary" onclick="processTransfer()">TRANSFER</button>
@@ -219,7 +285,9 @@
     <div class="neu-modal">
       <div class="section-title text-center" id="pkt-title">KANTONG BARU</div>
       <input type="hidden" id="pkt-id">
-      <input type="text" id="pkt-name" class="neu-input mb-20" placeholder="NAMA KANTONG">
+      <div class="modal-form-group">
+        <input type="text" id="pkt-name" class="neu-input" placeholder="NAMA KANTONG">
+      </div>
       <div class="grid-2">
         <button class="neu-btn" onclick="closeModal('modal-pocket')">BATAL</button>
         <button class="neu-btn text-primary" onclick="processPocket()">SIMPAN</button>
@@ -230,12 +298,62 @@
   <div class="modal-overlay" id="modal-account">
     <div class="neu-modal">
       <div class="section-title text-center">SIMPAN REKENING</div>
-      <input type="text" id="acc-bank" class="neu-input mb-20" placeholder="NAMA BANK/E-WALLET">
-      <input type="number" id="acc-num" class="neu-input mb-20" placeholder="NOMOR REKENING">
-      <input type="text" id="acc-owner" class="neu-input mb-20" placeholder="ATAS NAMA">
+      <div class="modal-form-group">
+        <input type="text" id="acc-bank" class="neu-input" placeholder="NAMA BANK/E-WALLET">
+      </div>
+      <div class="modal-form-group">
+        <input type="number" id="acc-num" class="neu-input" placeholder="NOMOR REKENING">
+      </div>
+      <div class="modal-form-group">
+        <input type="text" id="acc-owner" class="neu-input" placeholder="ATAS NAMA">
+      </div>
       <div class="grid-2">
         <button class="neu-btn" onclick="closeModal('modal-account')">BATAL</button>
         <button class="neu-btn text-accent" onclick="processAccount()">SIMPAN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Hutang -->
+  <div class="modal-overlay" id="modal-debt-main">
+    <div class="neu-modal">
+      <div class="section-title text-center text-primary" id="debt-title">CATAT HUTANG BARU</div>
+      <input type="hidden" id="debt-id">
+      <div class="modal-form-group">
+        <label class="input-label">PILIH TANGGAL & WAKTU</label>
+        <input type="datetime-local" id="debt-date" class="neu-input">
+      </div>
+      <div class="modal-form-group">
+        <label class="input-label">NAMA KREDITUR / PENGHUTANG</label>
+        <input type="text" id="debt-name" class="neu-input" placeholder="Nama Orang / Pinjol">
+      </div>
+      <div class="modal-form-group">
+        <label class="input-label">NOMINAL HUTANG SAYA (RP)</label>
+        <input type="number" id="debt-amount" class="neu-input" placeholder="0">
+      </div>
+      <div class="grid-2">
+        <button class="neu-btn" onclick="closeModal('modal-debt-main')">BATAL</button>
+        <button class="neu-btn text-primary" onclick="processDebtMain()">SIMPAN</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-debt-update">
+    <div class="neu-modal">
+      <div class="section-title text-center text-accent" id="debt-up-title">UPDATE HUTANG</div>
+      <input type="hidden" id="debt-up-id">
+      <input type="hidden" id="debt-up-type">
+      <div class="modal-form-group">
+        <label class="input-label">PILIH TANGGAL & WAKTU</label>
+        <input type="datetime-local" id="debt-up-date" class="neu-input">
+      </div>
+      <div class="modal-form-group">
+        <label class="input-label">NOMINAL TRANSAKSI (RP)</label>
+        <input type="number" id="debt-up-amount" class="neu-input" placeholder="0">
+      </div>
+      <div class="grid-2">
+        <button class="neu-btn" onclick="closeModal('modal-debt-update')">BATAL</button>
+        <button class="neu-btn text-accent" onclick="processDebtUpdate()">SIMPAN</button>
       </div>
     </div>
   </div>
