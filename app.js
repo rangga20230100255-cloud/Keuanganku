@@ -84,6 +84,19 @@ function copyAccount(num) {
   }
 }
 
+// ================= FUNGSI TOGGLE ACCORDION (PANAH) =================
+function toggleDebtHistory(histId) {
+  const el = document.getElementById(histId);
+  const icon = document.getElementById('icon_' + histId);
+  if (el.style.display === 'none' || el.style.display === '') {
+    el.style.display = 'block';
+    icon.style.transform = 'rotate(180deg)';
+  } else {
+    el.style.display = 'none';
+    icon.style.transform = 'rotate(0deg)';
+  }
+}
+
 // ================= MODAL HANDLER =================
 function openModal(id, mode = 'add', dataId = null) {
   document.getElementById(id).classList.add('active');
@@ -282,7 +295,7 @@ function processDebtUpdate() {
 }
 
 function deleteDebt(id) {
-  customConfirm('HAPUS CATATAN HUTANG INI?', () => {
+  customConfirm('HAPUS CATATAN HUTANG INI BESERTA RIWAYATNYA?', () => {
     db.debts = db.debts.filter(d => d.id !== id); saveData();
   });
 }
@@ -332,7 +345,7 @@ function renderAll() {
   const total = db.pockets.reduce((sum, p) => sum + p.balance, 0);
   document.getElementById('total-balance').innerText = formatRp(total);
 
-  // Render Kantong (Tampilan tombol Edit & Hapus menyamping)
+  // KANTONG
   document.getElementById('pocket-list').innerHTML = db.pockets.map(p => `
         <div class="neu-list-item">
             <div><div class="list-title">${p.name}</div><div class="list-sub">SALDO</div></div>
@@ -340,13 +353,13 @@ function renderAll() {
                 <div class="list-value text-primary">${formatRp(p.balance)}</div>
                 <div class="action-btn-group">
                     <button class="neu-btn neu-mini-btn" onclick="openModal('modal-pocket', 'edit', '${p.id}')">EDIT</button>
-                    ${p.balance === 0 ? `<button class="neu-btn neu-mini-btn text-accent border-accent" onclick="deletePocket('${p.id}')">HAPUS</button>` : ''}
+                    ${p.balance === 0 ? `<button class="neu-btn neu-mini-btn" onclick="deletePocket('${p.id}')">HAPUS</button>` : ''}
                 </div>
             </div>
         </div>
     `).join('');
 
-  // Render Rekening
+  // REKENING
   document.getElementById('account-list').innerHTML = db.accounts.map(a => `
         <div class="neu-list-item" style="flex-direction: column; gap: 12px; align-items: flex-start;">
             <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
@@ -355,13 +368,13 @@ function renderAll() {
             </div>
             <div class="neu-inset" style="padding: 12px; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <div class="list-value" style="font-size: 1.2rem; letter-spacing: 1px;">${a.num}</div>
-                <button class="neu-btn neu-mini-btn text-primary" style="margin-left:10px; padding: 10px 15px;" onclick="copyAccount('${a.num}')">SALIN</button>
+                <button class="neu-btn neu-mini-btn text-primary" style="margin-left:10px;" onclick="copyAccount('${a.num}')">SALIN</button>
             </div>
-            <button class="neu-btn w-100 text-accent border-accent mt-10" onclick="delAcc('${a.id}')">HAPUS REKENING</button>
+            <button class="neu-btn w-100 mt-10" onclick="delAcc('${a.id}')">HAPUS REKENING</button>
         </div>
     `).join('');
 
-  // Render Hutang
+  // HUTANG (Dengan Toggle Buka Tutup Riwayat)
   const debtHTML = db.debts.length === 0 ? '<p style="text-align:center; color:var(--text-muted); font-size:0.9rem;">BELUM ADA CATATAN HUTANG</p>' : db.debts.map(d => {
     const dDate = new Date(d.date).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase();
 
@@ -369,14 +382,18 @@ function renderAll() {
     const historyHTML = sortedHistory.map(h => {
       const hDate = new Date(h.date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }) + ' | ' + new Date(h.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace(/:/g, '.');
       let sign = '', colorClass = '', label = '';
-      if (h.type === 'add') { sign = '+'; colorClass = 'text-expense'; label = 'Hutang'; }
-      else if (h.type === 'sub') { sign = '-'; colorClass = 'text-income'; label = 'Bayar'; }
-      else { sign = ''; colorClass = 'text-primary'; label = 'Edit'; }
+
+      if (h.type === 'add') { sign = '+'; colorClass = 'text-expense'; label = 'Hutang Bertambah'; }
+      else if (h.type === 'sub') { sign = '-'; colorClass = 'text-income'; label = 'Pembayaran Hutang'; }
+      else { sign = ''; colorClass = 'text-primary'; label = 'Koreksi Data'; }
 
       return `
-            <div style="display:flex; justify-content:space-between; margin-bottom:8px; padding-bottom:8px; border-bottom:1px solid rgba(128,128,128,0.1);">
-                <div style="font-size:0.8rem; color:var(--text-main);">${hDate} <span style="color:var(--text-muted)">(${label})</span></div>
-                <div class="${colorClass}" style="font-size:0.9rem; font-weight:700;">${sign} ${formatRp(h.amount)}</div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--border-edge);">
+                <div>
+                    <div style="font-size:0.85rem; font-weight:700; color:var(--text-main);">${label}</div>
+                    <div style="font-size:0.7rem; color:var(--text-muted);">${hDate}</div>
+                </div>
+                <div class="${colorClass}" style="font-size:1rem; font-weight:700; align-self:center;">${sign} ${formatRp(h.amount)}</div>
             </div>`;
     }).join('');
 
@@ -386,29 +403,35 @@ function renderAll() {
                 <div class="list-title text-primary">${d.name}</div>
                 <div class="list-sub" style="margin:0; font-weight:700;">TGL: ${dDate}</div>
             </div>
+            
             <div class="neu-inset" style="padding: 12px; width: 100%; text-align: center;">
                 <div class="list-sub" style="margin-bottom: 5px;">SISA HUTANG SAYA:</div>
                 <div class="list-value text-expense" style="font-size: 1.5rem;">${formatRp(d.amount)}</div>
             </div>
-            <div style="width: 100%; margin-top: 10px;">
-                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; font-weight:700;">RIWAYAT HUTANG INI:</div>
-                <div class="neu-inset" style="max-height: 120px; overflow-y: auto; padding: 10px; border-radius: 10px; background: transparent; box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);">
+            
+            <div style="width: 100%; margin-top: 5px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; padding:5px 0;" onclick="toggleDebtHistory('hist_${d.id}')">
+                    <div style="font-size: 0.8rem; color: var(--text-muted); font-weight:700;">RIWAYAT PERUBAHAN</div>
+                    <svg id="icon_hist_${d.id}" style="transition:transform 0.3s; width:16px; height:16px; color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div id="hist_${d.id}" class="neu-inset mt-10" style="display:none; max-height: 150px; overflow-y: auto; padding: 12px; border-radius: 12px; background: transparent;">
                     ${historyHTML}
                 </div>
             </div>
+
             <div class="grid-2 w-100 mt-10">
-                <button class="neu-btn neu-mini-btn text-expense" style="padding: 12px;" onclick="openModal('modal-debt-update', 'add', '${d.id}')">+ HUTANG</button>
-                <button class="neu-btn neu-mini-btn text-income" style="padding: 12px;" onclick="openModal('modal-debt-update', 'sub', '${d.id}')">- BAYAR</button>
+                <button class="neu-btn neu-mini-btn text-expense" onclick="openModal('modal-debt-update', 'add', '${d.id}')">+ HUTANG</button>
+                <button class="neu-btn neu-mini-btn text-income" onclick="openModal('modal-debt-update', 'sub', '${d.id}')">- BAYAR</button>
             </div>
             <div class="grid-2 w-100 mt-10">
                 <button class="neu-btn neu-mini-btn text-primary" onclick="openModal('modal-debt-main', 'edit', '${d.id}')">EDIT</button>
-                <button class="neu-btn neu-mini-btn text-accent border-accent" onclick="deleteDebt('${d.id}')">HAPUS</button>
+                <button class="neu-btn neu-mini-btn" onclick="deleteDebt('${d.id}')">HAPUS</button>
             </div>
         </div>`;
   }).join('');
   document.getElementById('debt-list').innerHTML = debtHTML;
 
-  // Render Riwayat
+  // RIWAYAT TRANSAKSI UTAMA
   const hist = document.getElementById('history-list'); hist.innerHTML = '';
   const sorted = [...db.transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
   let lastDate = '';
@@ -429,7 +452,7 @@ function renderAll() {
                 <div class="list-value ${isMasuk ? 'text-income' : 'text-expense'}">${isMasuk ? '+' : '-'}${formatRp(t.amount)}</div>
                 <div class="action-btn-group">
                     <button class="neu-btn neu-mini-btn" onclick="openModal('modal-${isMasuk ? 'income' : 'expense'}', 'edit', '${t.id}')">EDIT</button>
-                    <button class="neu-btn neu-mini-btn text-accent border-accent" onclick="deleteTrx('${t.id}')">HAPUS</button>
+                    <button class="neu-btn neu-mini-btn" onclick="deleteTrx('${t.id}')">HAPUS</button>
                 </div>
             </div>
         </div>`;
@@ -445,7 +468,7 @@ function calc(v) {
   document.getElementById('calc-display').innerText = cVal;
 }
 
-// ================= GRAFIK (BAR + LINE TREN KAS) =================
+// ================= GRAFIK =================
 let barChart, pieChart;
 
 function renderCharts() {

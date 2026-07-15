@@ -15,7 +15,7 @@
   <div class="app-container">
     <header class="neu-header">
       <div class="header-info">
-        <div class="app-title">PRO FINANCE</div>
+        <div class="app-title">MY KEUANGAN</div>
         <div id="realtime-clock" class="clock-text">00:00:00</div>
       </div>
       <div class="header-actions">
@@ -140,20 +140,18 @@
           <div class="section-title text-accent">ZONA BAHAYA</div>
           <button class="neu-btn w-100 mb-20 text-accent border-accent" onclick="magicDelete()">TOMBOL SAKTI (HAPUS
             BULAN INI)</button>
-          <button class="neu-btn w-100 text-accent border-accent" onclick="deleteAllHistory()">HAPUS SEMUA DATA</button>
+          <!-- Tombol Hapus Semua Data telah dihilangkan sesuai permintaan -->
         </div>
       </section>
     </main>
 
     <!-- NAVIGASI BAWAH -->
     <nav class="neu-bottom-nav" id="bottom-nav">
-      <!-- 1. Beranda (Home) -->
       <button class="nav-btn active" onclick="switchTab('view-home', this)">
         <svg viewBox="0 0 24 24" stroke="currentColor" fill="none">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
         </svg>
       </button>
-      <!-- 2. Kantong (Dompet/Wallet) - DIGANTI -->
       <button class="nav-btn" onclick="switchTab('view-pockets', this)">
         <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"
           stroke-linejoin="round">
@@ -162,7 +160,6 @@
           <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path>
         </svg>
       </button>
-      <!-- 3. Rekening (Gedung Bank) - DIGANTI -->
       <button class="nav-btn" onclick="switchTab('view-account', this)">
         <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"
           stroke-linejoin="round">
@@ -174,21 +171,18 @@
           <line x1="18" y1="12" x2="18" y2="17"></line>
         </svg>
       </button>
-      <!-- 4. Hutang (Dokumen) -->
       <button class="nav-btn" onclick="switchTab('view-debt', this)">
         <svg viewBox="0 0 24 24" stroke="currentColor" fill="none">
           <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
           <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
         </svg>
       </button>
-      <!-- 5. Chart (Grafik) -->
       <button class="nav-btn" onclick="switchTab('view-charts', this)">
         <svg viewBox="0 0 24 24" stroke="currentColor" fill="none">
           <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
           <polyline points="17 6 23 6 23 12"></polyline>
         </svg>
       </button>
-      <!-- 6. Calc (Kalkulator) -->
       <button class="nav-btn" onclick="switchTab('view-calc', this)">
         <svg viewBox="0 0 24 24" stroke="currentColor" fill="none">
           <rect x="4" y="2" width="16" height="20" rx="2"></rect>
@@ -196,7 +190,6 @@
           <line x1="16" y1="14" x2="16" y2="18"></line>
         </svg>
       </button>
-      <!-- 7. History (Riwayat) -->
       <button class="nav-btn" onclick="switchTab('view-history', this)">
         <svg viewBox="0 0 24 24" stroke="currentColor" fill="none">
           <circle cx="12" cy="12" r="10"></circle>
@@ -206,7 +199,7 @@
     </nav>
   </div>
 
-  <!-- ================= MODALS (SANGAT SIMETRIS) ================= -->
+  <!-- ================= MODALS (SANGAT SIMETRIS & KONSISTEN) ================= -->
 
   <div class="modal-overlay" id="modal-income">
     <div class="neu-modal">
@@ -314,7 +307,7 @@
     </div>
   </div>
 
-  <!-- Modal Hutang -->
+  <!-- Modal Hutang (Debt) -->
   <div class="modal-overlay" id="modal-debt-main">
     <div class="neu-modal">
       <div class="section-title text-center text-primary" id="debt-title">CATAT HUTANG BARU</div>
@@ -324,8 +317,8 @@
         <input type="datetime-local" id="debt-date" class="neu-input">
       </div>
       <div class="modal-form-group">
-        <label class="input-label">NAMA KREDITUR / PENGHUTANG</label>
-        <input type="text" id="debt-name" class="neu-input" placeholder="Nama Orang / Pinjol">
+        <label class="input-label">NAMA HUTANG</label>
+        <input type="text" id="debt-name" class="neu-input" placeholder="Nama Orang / Layanan">
       </div>
       <div class="modal-form-group">
         <label class="input-label">NOMINAL HUTANG SAYA (RP)</label>
@@ -358,6 +351,7 @@
     </div>
   </div>
 
+  <!-- Alert & Confirm Kustom -->
   <div class="modal-overlay" id="modal-alert" style="z-index: 10000;">
     <div class="neu-modal text-center">
       <div class="section-title text-accent" id="alert-message" style="font-size: 1.1rem; margin-bottom: 20px;">PESAN

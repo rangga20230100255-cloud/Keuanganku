@@ -5,30 +5,40 @@
   --income: #2b9348;
   --expense: #d90429;
 
-  --bg-color: #f0f3f8;
+  /* BAYANGAN UNGU LEMBUT UNTUK LIGHT MODE */
+  --bg-color: #f2eff7;
+  /* Putih dengan tint ungu sangat tipis */
   --shadow-light: #ffffff;
-  --shadow-dark: #d1d9e6;
+  --shadow-dark: #d2cbe0;
+  /* Abu-abu keunguan */
   --text-main: #111111;
   --text-muted: #666666;
 
   --card-grad-1: #4a148c;
   --card-grad-2: #210049;
   --card-text: #ffffff;
+  --border-edge: rgba(74, 20, 140, 0.05);
+  /* Border ungu transparan */
 }
 
 [data-theme="dark"] {
   --primary: #ce93d8;
   --accent: #ffffff;
 
-  --bg-color: #181818;
-  --shadow-light: #242424;
-  --shadow-dark: #0c0c0c;
+  /* BAYANGAN UNGU GELAP UNTUK DARK MODE */
+  --bg-color: #15111a;
+  /* Hitam keunguan pekat */
+  --shadow-light: #241d2e;
+  /* Highlight ungu gelap */
+  --shadow-dark: #08060a;
+  /* Bayangan hitam pekat */
   --text-main: #ffffff;
   --text-muted: #aaaaaa;
 
   --card-grad-1: #6a1b9a;
   --card-grad-2: #38006b;
   --card-text: #ffffff;
+  --border-edge: rgba(206, 147, 216, 0.1);
 }
 
 * {
@@ -74,10 +84,6 @@ body {
   background: var(--primary);
   border-radius: 10px;
   border: 1px solid var(--bg-color);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--accent);
 }
 
 .text-primary {
@@ -166,11 +172,12 @@ body {
 /* Komponen Neumorphism */
 .neu-card {
   background: var(--bg-color);
+  border: 1px solid var(--border-edge);
   border-radius: 20px;
   padding: 20px;
   box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
   margin-bottom: 20px;
-  transition: background 0.3s;
+  transition: background 0.3s, border 0.3s;
 }
 
 .gradient-card {
@@ -199,7 +206,7 @@ body {
 .neu-btn {
   background: var(--bg-color);
   color: var(--text-main);
-  border: none;
+  border: 1px solid var(--border-edge);
   padding: 16px;
   border-radius: 15px;
   font-size: 1rem;
@@ -220,14 +227,14 @@ body {
   width: 100%;
   padding: 16px;
   border-radius: 15px;
-  border: none;
+  border: 1px solid var(--border-edge);
   outline: none;
   background: var(--bg-color);
   color: var(--text-main);
   font-size: 1rem;
   font-weight: 600;
   box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
-  transition: background 0.3s;
+  transition: background 0.3s, border 0.3s;
 }
 
 [data-theme="dark"] ::-webkit-calendar-picker-indicator {
@@ -296,9 +303,9 @@ body {
   }
 }
 
-/* PERBAIKAN: Item List Menjadi Rapi dan Simetris */
 .neu-list-item {
   background: var(--bg-color);
+  border: 1px solid var(--border-edge);
   border-radius: 15px;
   padding: 20px 15px;
   box-shadow: 4px 4px 10px var(--shadow-dark), -4px -4px 10px var(--shadow-light);
@@ -306,7 +313,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: background 0.3s;
+  transition: background 0.3s, border 0.3s;
 }
 
 .list-title {
@@ -405,7 +412,7 @@ body {
 
 .nav-btn {
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   outline: none;
   cursor: pointer;
   color: var(--text-muted);
@@ -427,10 +434,11 @@ body {
 .nav-btn.active {
   color: var(--primary);
   background: var(--bg-color);
+  border-color: var(--border-edge);
   box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
 }
 
-/* PERBAIKAN: Modal (Pop up) Simetris Konsisten */
+/* Pop up (Modal) */
 .modal-overlay {
   position: absolute;
   top: 0;
@@ -452,22 +460,22 @@ body {
 
 .neu-modal {
   background: var(--bg-color);
+  border: 1px solid var(--border-edge);
   padding: 25px;
   border-radius: 25px;
   width: 100%;
   max-width: 380px;
-  box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.5);
   animation: popUp 0.3s ease;
   max-height: 90vh;
   overflow-y: auto;
 }
 
 .modal-form-group {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   width: 100%;
 }
 
-/* Jarak antar input selalu presisi */
 @keyframes popUp {
   from {
     transform: scale(0.8);
